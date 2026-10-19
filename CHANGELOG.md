@@ -4,7 +4,7 @@ All notable changes to LocalInk are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project uses
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.0.1] — 2026-10-20
 
 ### Fixed
 
@@ -64,4 +64,5 @@ First public release.
 - Headless logic tests for geometry, rendering, and export composition.
 - Marketing website with an animated product demo.
 
+[1.0.1]: https://github.com/anh-nguyenn/LocalInk/releases/tag/v1.0.1
 [1.0.0]: https://github.com/anh-nguyenn/LocalInk/releases/tag/v1.0.0

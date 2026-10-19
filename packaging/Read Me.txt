@@ -1,4 +1,4 @@
-LocalInk 1.0.0
+LocalInk 1.0.1
 ==============
 
 A local, offline macOS menu-bar app for drawing and directing attention on top
