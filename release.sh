@@ -12,6 +12,7 @@ mkdir -p dist/release
 # Zip: keeps LocalInk.app as a single bundle that Safari extracts directly.
 rm -f "dist/$NAME.zip"
 ditto -c -k --sequesterRsrc --keepParent "dist/LocalInk.app" "dist/$NAME.zip"
+cp "dist/$NAME.zip" "dist/LocalInk.zip"
 
 # DMG: a familiar drag-to-Applications install with a short read me.
 STAGE="dist/release/dmg"
@@ -22,10 +23,11 @@ ln -s /Applications "$STAGE/Applications"
 cp "packaging/Read Me.txt" "$STAGE/Read Me.txt"
 rm -f "dist/$NAME.dmg"
 hdiutil create -volname "$NAME" -srcfolder "$STAGE" -ov -format UDZO "dist/$NAME.dmg" >/dev/null
+cp "dist/$NAME.dmg" "dist/LocalInk.dmg"
 
 echo ""
 echo "Release artifacts:"
-echo "  dist/$NAME.zip"
-echo "  dist/$NAME.dmg"
+echo "  dist/$NAME.zip  (and stable dist/LocalInk.zip)"
+echo "  dist/$NAME.dmg  (and stable dist/LocalInk.dmg)"
 echo ""
 shasum -a 256 "dist/$NAME.zip" "dist/$NAME.dmg"

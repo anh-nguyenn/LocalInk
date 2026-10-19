@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LocalInk — Draw on anything. Interrupt nothing.</title>
+  <meta name="description" content="LocalInk is a free, open-source macOS menu-bar app for drawing, highlighting, and spotlighting your screen during presentations, lessons, and recordings. Offline, lightweight, and private." />
+  <meta name="theme-color" content="#0b0d12" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="LocalInk — Draw on anything. Interrupt nothing." />
+  <meta property="og:description" content="A lightweight, offline macOS menu-bar app for annotating your screen during presentations, lessons, and recordings." />
+  <meta property="og:image" content="assets/icon.png" />
+  <link rel="icon" href="assets/icon-256.png" />
+
+  <link rel="stylesheet" href="assets/styles.css" />
+  <noscript><style>.reveal{opacity:1;transform:none}</style></noscript>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav" id="nav">
+    <div class="container nav-inner">
+      <a class="brand" href="#top" aria-label="LocalInk home">
+        <img src="assets/icon-256.png" alt="" width="30" height="30" />
+        <span>LocalInk</span>
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="#features">Features</a>
+        <a href="#demo">Try it</a>
+        <a href="#how">How it works</a>
+        <a href="#download">Download</a>
+        <a href="https://github.com/anh-nguyenn/LocalInk" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+      <a class="btn btn-small btn-primary nav-cta" href="#download">Download</a>
+      <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- Hero -->
+    <section class="hero" id="top">
+      <div class="hero-glow" aria-hidden="true"></div>
+      <div class="container hero-inner">
+        <div class="hero-copy reveal">
+          <span class="eyebrow"><span class="dot"></span> Free &amp; open source · Offline · macOS 13+</span>
+          <h1>Take your presentation<br /><span class="gradient-text">to the next level.</span></h1>
+          <p class="lede">
+            Annotate your screen, highlight your cursor, and spotlight or zoom in on the
+            details that matter — right over any app, without interrupting the work underneath.
+          </p>
+          <div class="cta-row">
+            <a class="btn btn-primary btn-large" id="heroDownload" href="https://github.com/anh-nguyenn/LocalInk/releases/latest/download/LocalInk.zip">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Download for Mac
+            </a>
+            <a class="btn btn-ghost btn-large" href="https://github.com/anh-nguyenn/LocalInk" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.58 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.09.68-.22.68-.49v-1.7c-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.5-1.11-1.5-.91-.63.07-.62.07-.62 1 .07 1.53 1.06 1.53 1.06.9 1.57 2.34 1.12 2.91.86.09-.66.35-1.12.63-1.38-2.22-.26-4.56-1.14-4.56-5.06 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05a9.3 9.3 0 0 1 5 0c1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.93-2.35 4.8-4.58 5.05.36.32.68.94.68 1.9v2.81c0 .27.18.59.69.49A10.02 10.02 0 0 0 22 12.25C22 6.58 17.52 2 12 2Z" fill="currentColor"/></svg>
+              Star on GitHub
+            </a>
+          </div>
+          <p class="meta">Direct download · Universal (Apple Silicon &amp; Intel) · Under 1 MB · No account, no telemetry</p>
+        </div>
+
+        <div class="hero-visual reveal">
+          <figure class="window-shot">
+            <img src="assets/demo.gif" width="720" height="450"
+                 alt="LocalInk drawing a circle around a chart, adding an arrow, then highlighting the cursor with a halo and spotlight" />
+            <span class="shot-badge">Live demo</span>
+          </figure>
+          <div class="float-card float-hint">Hold <kbd>⌘</kbd> to click through</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Trust -->
+    <section class="trust">
+      <div class="container">
+        <p>Annotate over anything you can see</p>
+        <div class="trust-row">
+          <span>Keynote</span><span>Zoom</span><span>Figma</span><span>VS Code</span>
+          <span>Google Slides</span><span>PDFs</span><span>QuickTime</span><span>Terminal</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Feature rows -->
+    <section class="section" id="features">
+      <div class="container">
+        <div class="section-head center reveal">
+          <span class="eyebrow">What is LocalInk?</span>
+          <h2>A Mac app that makes your point <br class="br-wide" />impossible to miss.</h2>
+          <p class="section-sub">Annotate, highlight, spotlight, and zoom — all from a tiny menu-bar app that stays out of the way when you are done.</p>
+        </div>
+
+        <div class="feature-rows">
+          <!-- Annotate -->
+          <div class="feature-row reveal">
+            <div class="feature-text">
+              <span class="tag">Annotate</span>
+              <h3>Draw over anything</h3>
+              <p>Use pens, highlighters, text, arrows, and shapes to emphasize a point in real time. It works with any app or file type — slides, code, PDFs, videos, or a live demo.</p>
+              <ul class="mini-list">
+                <li>Pen, arrow, line, rectangle, ellipse, highlighter, text</li>
+                <li>Solid redaction and a sequential counter for walkthroughs</li>
+                <li>Shift-constrained shapes and 45° line snapping</li>
+                <li>Auto-erase marks after a delay, or keep them on screen</li>
+              </ul>
+              <a class="text-link" href="#download">Download now →</a>
+            </div>
+            <div class="feature-visual">
+              <div class="shot">
+                <div class="shot-bar"><i></i><i></i><i></i><span>annotate.html</span></div>
+                <div class="shot-body">
+                  <svg viewBox="0 0 520 320" role="img" aria-label="Annotated slide with an arrow and a circle">
+                    <defs>
+                      <linearGradient id="gInk" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0" stop-color="#ff7a55"/><stop offset="1" stop-color="#ffb84a"/>
+                      </linearGradient>
+                    </defs>
+                    <text x="34" y="52" fill="#7f8aa3" font-size="11" font-family="system-ui" letter-spacing="3">Q3 REVIEW</text>
+                    <text x="34" y="96" fill="#eceff7" font-size="34" font-family="system-ui" font-weight="700">Momentum,</text>
+                    <text x="34" y="132" fill="#eceff7" font-size="34" font-family="system-ui" font-weight="700">measured.</text>
+                    <g opacity="0.85">
+                      <rect x="300" y="190" width="30" height="70" rx="7" fill="#ffb84a" opacity="0.35"/>
+                      <rect x="342" y="160" width="30" height="100" rx="7" fill="#ffb84a" opacity="0.45"/>
+                      <rect x="384" y="178" width="30" height="82" rx="7" fill="#ffb84a" opacity="0.4"/>
+                      <rect x="426" y="128" width="30" height="132" rx="7" fill="#ffb84a" opacity="0.55"/>
+                    </g>
+                    <path d="M120 250 C 190 232 250 190 300 168" fill="none" stroke="url(#gInk)" stroke-width="6" stroke-linecap="round"/>
+                    <path d="M300 168 l -17 -2 l 6 15 z" fill="#ff7a55"/>
+                    <ellipse cx="455" cy="196" rx="34" ry="74" fill="none" stroke="#ff7a55" stroke-width="5"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cursor highlight -->
+          <div class="feature-row reverse reveal">
+            <div class="feature-text">
+              <span class="tag">Cursor highlight</span>
+              <h3>Keep eyes on the pointer</h3>
+              <p>A stylish ring follows your cursor so viewers can track exactly where you are. Clicks emit a subtle ripple, and the halo stays click-through — every action still reaches the app underneath.</p>
+              <ul class="mini-list">
+                <li>Custom color, size, and opacity</li>
+                <li>Ring-only mode or ring with a center dot</li>
+                <li>Click ripple feedback while presenting</li>
+                <li>Works while drawing is off</li>
+              </ul>
+              <a class="text-link" href="#download">Download now →</a>
+            </div>
+            <div class="feature-visual">
+              <div class="shot">
+                <div class="shot-bar"><i></i><i></i><i></i><span>highlight.html</span></div>
+                <div class="shot-body">
+                  <svg viewBox="0 0 520 320" role="img" aria-label="Cursor with a halo ring and click ripples">
+                    <rect x="0" y="0" width="520" height="320" fill="#121724"/>
+                    <circle cx="260" cy="168" r="84" fill="none" stroke="#ffd12a" stroke-width="2" opacity="0.18"/>
+                    <circle cx="260" cy="168" r="58" fill="none" stroke="#ffd12a" stroke-width="3" opacity="0.32"/>
+                    <circle cx="260" cy="168" r="34" fill="none" stroke="#ffd12a" stroke-width="5"/>
+                    <circle cx="260" cy="168" r="4" fill="#ffd12a"/>
+                    <path d="M252 158 l0 30 l8 -8 l6 13 l7 -3 l-6 -13 l11 0 z" fill="#fff" stroke="#111" stroke-width="1.6"/>
+                    <circle cx="260" cy="168" r="70" fill="none" stroke="#ffd12a" stroke-width="2" opacity="0.5" stroke-dasharray="6 10"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Spotlight -->
+          <div class="feature-row reveal">
+            <div class="feature-text">
+              <span class="tag">Spotlight &amp; zoom</span>
+              <h3>Direct the room's attention</h3>
+              <p>Dim everything except a clear aperture around your cursor, like a theatre spotlight. Move it across the screen while the apps underneath stay fully interactive.</p>
+              <ul class="mini-list">
+                <li>Adjustable aperture size and dim level</li>
+                <li>No screen capture required</li>
+                <li>Full-screen zoom and a cursor-following lens</li>
+                <li>Both work across multiple displays</li>
+              </ul>
+              <a class="text-link" href="#download">Download now →</a>
+            </div>
+            <div class="feature-visual">
+              <div class="shot">
+                <div class="shot-bar"><i></i><i></i><i></i><span>spotlight.html</span></div>
+                <div class="shot-body">
+                  <svg viewBox="0 0 520 320" role="img" aria-label="Spotlight dimming the screen except around the cursor">
+                    <rect x="0" y="0" width="520" height="320" fill="#0f1420"/>
+                    <g opacity="0.9">
+                      <rect x="40" y="60" width="30" height="90" rx="6" fill="#ffb84a" opacity="0.5"/>
+                      <rect x="82" y="90" width="30" height="60" rx="6" fill="#ffb84a" opacity="0.4"/>
+                      <rect x="124" y="44" width="30" height="106" rx="6" fill="#ffb84a" opacity="0.55"/>
+                      <rect x="360" y="70" width="120" height="10" rx="5" fill="#4b5673"/>
+                      <rect x="360" y="94" width="90" height="10" rx="5" fill="#4b5673"/>
+                      <rect x="360" y="118" width="110" height="10" rx="5" fill="#4b5673"/>
+                    </g>
+                    <mask id="spotMask">
+                      <rect x="0" y="0" width="520" height="320" fill="white"/>
+                      <circle cx="262" cy="190" r="82" fill="black"/>
+                    </mask>
+                    <rect x="0" y="0" width="520" height="320" fill="#000" opacity="0.62" mask="url(#spotMask)"/>
+                    <circle cx="262" cy="190" r="82" fill="none" stroke="#ffd12a" stroke-width="1.5" opacity="0.25"/>
+                    <circle cx="262" cy="190" r="30" fill="none" stroke="#ffd12a" stroke-width="4"/>
+                    <path d="M254 180 l0 28 l7 -7 l6 12 l6 -3 l-6 -12 l10 0 z" fill="#fff" stroke="#111" stroke-width="1.5"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Whiteboard -->
+          <div class="feature-row reverse reveal">
+            <div class="feature-text">
+              <span class="tag">Whiteboard</span>
+              <h3>Sketch ideas on a clean canvas</h3>
+              <p>Switch to an opaque board to explain a concept without the clutter behind it. Board drawings stay separate from your desktop marks, so switching modes never mixes them up.</p>
+              <ul class="mini-list">
+                <li>White or custom board color</li>
+                <li>Separate canvas for board drawings</li>
+                <li>Same tools, colors, and shortcuts</li>
+                <li>Return to the desktop without losing your marks</li>
+              </ul>
+              <a class="text-link" href="#download">Download now →</a>
+            </div>
+            <div class="feature-visual">
+              <div class="shot light">
+                <div class="shot-bar"><i></i><i></i><i></i><span>whiteboard</span></div>
+                <div class="shot-body board">
+                  <svg viewBox="0 0 520 320" role="img" aria-label="Whiteboard with marker drawings">
+                    <rect x="0" y="0" width="520" height="320" fill="#f6f5f1"/>
+                    <g opacity="0.16">
+                      <g fill="#7a8499">
+                        <circle cx="40" cy="40" r="1.4"/><circle cx="100" cy="40" r="1.4"/><circle cx="160" cy="40" r="1.4"/><circle cx="220" cy="40" r="1.4"/><circle cx="280" cy="40" r="1.4"/><circle cx="340" cy="40" r="1.4"/><circle cx="400" cy="40" r="1.4"/><circle cx="460" cy="40" r="1.4"/>
+                        <circle cx="40" cy="100" r="1.4"/><circle cx="100" cy="100" r="1.4"/><circle cx="160" cy="100" r="1.4"/><circle cx="220" cy="100" r="1.4"/><circle cx="280" cy="100" r="1.4"/><circle cx="340" cy="100" r="1.4"/><circle cx="400" cy="100" r="1.4"/><circle cx="460" cy="100" r="1.4"/>
+                        <circle cx="40" cy="160" r="1.4"/><circle cx="100" cy="160" r="1.4"/><circle cx="160" cy="160" r="1.4"/><circle cx="220" cy="160" r="1.4"/><circle cx="280" cy="160" r="1.4"/><circle cx="340" cy="160" r="1.4"/><circle cx="400" cy="160" r="1.4"/><circle cx="460" cy="160" r="1.4"/>
+                        <circle cx="40" cy="220" r="1.4"/><circle cx="100" cy="220" r="1.4"/><circle cx="160" cy="220" r="1.4"/><circle cx="220" cy="220" r="1.4"/><circle cx="280" cy="220" r="1.4"/><circle cx="340" cy="220" r="1.4"/><circle cx="400" cy="220" r="1.4"/><circle cx="460" cy="220" r="1.4"/>
+                        <circle cx="40" cy="280" r="1.4"/><circle cx="100" cy="280" r="1.4"/><circle cx="160" cy="280" r="1.4"/><circle cx="220" cy="280" r="1.4"/><circle cx="280" cy="280" r="1.4"/><circle cx="340" cy="280" r="1.4"/><circle cx="400" cy="280" r="1.4"/><circle cx="460" cy="280" r="1.4"/>
+                      </g>
+                    </g>
+                    <path d="M80 230 C 120 150, 180 120, 240 150 S 300 220, 360 120" fill="none" stroke="#e0533d" stroke-width="6" stroke-linecap="round"/>
+                    <rect x="330" y="70" width="120" height="80" rx="6" fill="none" stroke="#2f6fd6" stroke-width="5"/>
+                    <path d="M80 90 l 120 0 m -20 -18 l 20 18 l -20 18" fill="none" stroke="#1f9d63" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <text x="80" y="70" fill="#3a4152" font-size="22" font-family="system-ui" font-weight="700">Big idea</text>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Performance -->
+    <section class="section stats-section">
+      <div class="container">
+        <div class="section-head center reveal">
+          <span class="eyebrow">Built native, built small</span>
+          <h2>Fast, light, and quiet.</h2>
+          <p class="section-sub">A native AppKit app with no web runtime and no background services. It starts instantly and stays out of the way.</p>
+        </div>
+        <div class="stats-grid">
+          <div class="stat reveal"><strong>1.2 MB</strong><span>App on disk</span></div>
+          <div class="stat reveal"><strong>&lt; 1 MB</strong><span>Browser download</span></div>
+          <div class="stat reveal"><strong>Universal</strong><span>Apple Silicon &amp; Intel</span></div>
+          <div class="stat reveal"><strong>0</strong><span>Network requests</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive demo -->
+    <section class="section demo-section" id="demo">
+      <div class="container">
+        <div class="section-head center reveal">
+          <span class="eyebrow">Try it in your browser</span>
+          <h2>A tiny taste of LocalInk.</h2>
+          <p class="section-sub">Pick a tool and draw on the slide. The real app works like this over every window on your Mac.</p>
+        </div>
+
+        <div class="demo reveal">
+          <div class="demo-toolbar" role="toolbar" aria-label="Demo tools">
+            <div class="tool-group">
+              <button class="tool active" data-tool="pen" title="Pen">✏️</button>
+              <button class="tool" data-tool="arrow" title="Arrow">↗</button>
+              <button class="tool" data-tool="rect" title="Rectangle">▭</button>
+              <button class="tool" data-tool="ellipse" title="Ellipse">◯</button>
+              <button class="tool" data-tool="highlighter" title="Highlighter">🖍️</button>
+            </div>
+            <div class="tool-group swatches" id="swatches"></div>
+            <label class="width-control">Width <input id="demoWidth" type="range" min="2" max="18" value="5" /></label>
+            <div class="tool-group">
+              <button class="tool" id="demoUndo" title="Undo">↶</button>
+              <button class="tool" id="demoClear" title="Clear">Clear</button>
+            </div>
+          </div>
+
+          <div class="demo-canvas-wrap" id="canvasWrap">
+            <div class="demo-fake">
+              <div class="fake-top">
+                <span class="fake-kicker">PRODUCT DEMO</span>
+                <h3>Make the point.<br />Keep the flow.</h3>
+                <p>Draw anywhere on this slide. The buttons above mirror the real floating toolbar.</p>
+              </div>
+              <div class="fake-bars">
+                <span style="width:78%"></span>
+                <span style="width:64%"></span>
+                <span style="width:82%"></span>
+                <span style="width:46%"></span>
+              </div>
+            </div>
+            <canvas id="demoCanvas" aria-label="Interactive drawing demo"></canvas>
+            <div class="demo-hint" id="demoHint">Draw here</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="section" id="how">
+      <div class="container">
+        <div class="section-head center reveal">
+          <span class="eyebrow">Three seconds, start to finish</span>
+          <h2>Toggle on. Make the point. Toggle off.</h2>
+        </div>
+        <div class="steps">
+          <div class="step reveal">
+            <span class="step-num">1</span>
+            <h3>Toggle drawing</h3>
+            <p>Press <kbd>⌃⌥D</kbd> or use the menu-bar pencil. The desktop stays exactly where it is.</p>
+          </div>
+          <div class="step reveal">
+            <span class="step-num">2</span>
+            <h3>Draw and direct</h3>
+            <p>Annotate over any app. Turn on the halo or spotlight to point without hiding the interface.</p>
+          </div>
+          <div class="step reveal">
+            <span class="step-num">3</span>
+            <h3>Get back to work</h3>
+            <p>Toggle drawing off and every click, drag, and scroll goes back to the app underneath. Marks stay until you clear them.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Privacy -->
+    <section class="section privacy">
+      <div class="container split">
+        <div class="reveal">
+          <span class="eyebrow">Local means local</span>
+          <h2>Your screen never leaves your Mac.</h2>
+          <p class="section-sub left">
+            LocalInk is built for people who present sensitive work. It runs fully offline with no
+            account and no analytics. Drawing, halo, and spotlight never need screen-capture
+            permission; only the optional zoom and export features do.
+          </p>
+          <ul class="checklist">
+            <li>No sign-up, no subscription, no telemetry</li>
+            <li>No network code at runtime</li>
+            <li>Images are saved only where you choose</li>
+            <li>Open source under the MIT license</li>
+          </ul>
+        </div>
+        <div class="compare reveal">
+          <div class="compare-row compare-head">
+            <span></span><span>LocalInk</span><span>Cloud whiteboards</span>
+          </div>
+          <div class="compare-row"><span>Works offline</span><span class="yes">Yes</span><span class="no">Rarely</span></div>
+          <div class="compare-row"><span>Account required</span><span class="yes">No</span><span class="no">Usually</span></div>
+          <div class="compare-row"><span>Annotate over any app</span><span class="yes">Yes</span><span class="no">In a browser tab</span></div>
+          <div class="compare-row"><span>Download size</span><span class="yes">&lt; 1 MB</span><span class="no">100 MB+</span></div>
+          <div class="compare-row"><span>Screen pixels uploaded</span><span class="yes">Never</span><span class="no">Often</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Use cases -->
+    <section class="section">
+      <div class="container">
+        <div class="section-head center reveal">
+          <span class="eyebrow">Made for people who explain things</span>
+          <h2>One app, many rooms.</h2>
+        </div>
+        <div class="usecase-grid">
+          <div class="usecase reveal"><span>🎓</span><h3>Educators</h3><p>Mark up slides and code while teaching, then hand control back without switching apps.</p></div>
+          <div class="usecase reveal"><span>🎤</span><h3>Presenters</h3><p>Point out a control in a live demo and keep the audience on the exact step you mean.</p></div>
+          <div class="usecase reveal"><span>🎨</span><h3>Designers</h3><p>Circle a detail in a review and annotate directly on the interface you are discussing.</p></div>
+          <div class="usecase reveal"><span>🛠️</span><h3>Support</h3><p>Walk someone through on-screen steps with clear marks and a visible cursor.</p></div>
+          <div class="usecase reveal"><span>🎬</span><h3>Creators</h3><p>Record annotated tutorials with a clean, native overlay that stays out of the capture.</p></div>
+          <div class="usecase reveal"><span>🧑‍💻</span><h3>Developers</h3><p>Explain a code path in a shared editor, spotlight a log line, and zoom into a small detail.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Download -->
+    <section class="section download" id="download">
+      <div class="container download-inner reveal">
+        <img class="download-icon" src="assets/icon-256.png" alt="LocalInk app icon" width="88" height="88" />
+        <h2>Download LocalInk</h2>
+        <p class="section-sub">Free forever. No account. No strings.</p>
+        <div class="cta-row center">
+          <a class="btn btn-primary btn-large" id="mainDownload" href="https://github.com/anh-nguyenn/LocalInk/releases/latest/download/LocalInk.zip">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Download LocalInk.zip
+          </a>
+          <a class="btn btn-ghost btn-large" href="https://github.com/anh-nguyenn/LocalInk/releases/latest/download/LocalInk.dmg">Download .dmg</a>
+        </div>
+        <p class="download-meta">Version 1.0.0 · Universal · macOS 13 or later · ~0.6 MB</p>
+
+        <div class="install-grid">
+          <div class="install-card">
+            <h3>Install</h3>
+            <ol>
+              <li>Download and unzip <code>LocalInk.zip</code>.</li>
+              <li>Drag <strong>LocalInk.app</strong> into <strong>Applications</strong>.</li>
+              <li>Open it — LocalInk lives in the menu bar.</li>
+            </ol>
+          </div>
+          <div class="install-card warn">
+            <h3>First launch</h3>
+            <p>
+              LocalInk is signed locally but not notarized with a paid Apple account. If macOS
+              blocks the first launch, right-click (or Control-click) the app, choose
+              <strong>Open</strong>, then <strong>Open</strong> again. You only do this once.
+            </p>
+            <p class="mono">xattr -dr com.apple.quarantine /Applications/LocalInk.app</p>
+          </div>
+        </div>
+        <p class="download-fallback">
+          Prefer a specific version? See <a href="https://github.com/anh-nguyenn/LocalInk/releases" target="_blank" rel="noopener">all releases on GitHub</a>.
+        </p>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section faq">
+      <div class="container">
+        <div class="section-head center reveal">
+          <span class="eyebrow">Questions</span>
+          <h2>Good to know</h2>
+        </div>
+        <div class="faq-list">
+          <details class="reveal">
+            <summary>Is LocalInk really free?</summary>
+            <p>Yes. It is free and open source under the MIT license. There is no paid tier, account, or trial.</p>
+          </details>
+          <details class="reveal">
+            <summary>Does it collect any data?</summary>
+            <p>No. There is no telemetry, no analytics, and no network access in the app. Your screen content never leaves your Mac.</p>
+          </details>
+          <details class="reveal">
+            <summary>Does it need Screen Recording permission?</summary>
+            <p>Only the optional magnifier, full-screen zoom, and image export need it. Drawing, halo, and spotlight work without any capture permission.</p>
+          </details>
+          <details class="reveal">
+            <summary>Why does macOS warn me the first time?</summary>
+            <p>The app is not notarized with a paid Apple Developer account. Right-click the app and choose Open once, or use the System Settings prompt to allow it.</p>
+          </details>
+          <details class="reveal">
+            <summary>Which Macs are supported?</summary>
+            <p>macOS 13 or later, on both Apple Silicon and Intel Macs. The download is a universal build.</p>
+          </details>
+          <details class="reveal">
+            <summary>Can I use it while sharing my screen?</summary>
+            <p>Yes. Sharing your entire display generally captures overlays correctly. Sharing a single window may not include the overlay, so verify the behavior in your meeting or recording app.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <img src="assets/icon-256.png" alt="" width="26" height="26" />
+        <span>LocalInk</span>
+      </div>
+      <p class="footer-tag">A tiny macOS menu-bar app that lets you annotate anything on screen in real time — then get out of the way.</p>
+      <nav class="footer-links" aria-label="Footer">
+        <a href="https://github.com/anh-nguyenn/LocalInk" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/anh-nguyenn/LocalInk/releases" target="_blank" rel="noopener">Releases</a>
+        <a href="https://github.com/anh-nguyenn/LocalInk/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>
+        <a href="#download">Download</a>
+      </nav>
+      <p class="footer-made">Made by Anh Nguyen (Jerry)</p>
+      <p class="footer-copy">© <span id="year">2026</span> LocalInk. Built for macOS. No cookies, no tracking.</p>
+    </div>
+  </footer>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>
