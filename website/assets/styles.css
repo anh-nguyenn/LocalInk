@@ -248,7 +248,7 @@ kbd {
 .download-fallback a { color: var(--accent-2); text-decoration: underline; text-underline-offset: 3px; }
 
 /* ---------- FAQ ---------- */
-.faq-list { display: grid; gap: 10px; max-width: 820px; }
+.faq-list { display: grid; gap: 10px; max-width: 820px; margin-left: auto; margin-right: auto; }
 details { border: 1px solid var(--border); border-radius: 14px; background: var(--panel); padding: 0 20px; }
 details summary { cursor: pointer; list-style: none; padding: 17px 0; font-weight: 600; font-size: 15.5px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 details summary::-webkit-details-marker { display: none; }
