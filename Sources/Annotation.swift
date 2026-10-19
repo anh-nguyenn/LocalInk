@@ -146,17 +146,15 @@ struct Annotation: Identifiable, Codable, Equatable {
         case .arrow:
             return distanceToSegment(point) <= thickness / 2 + slop
         case .rectangle:
-            let r = normalizedRect
-            return r.insetBy(dx: -slop, dy: -slop).contains(point) &&
-                   (r.insetBy(dx: slop, dy: slop).contains(point) ||
-                    near(r, point, slop: thickness / 2 + slop))
+            return normalizedRect.insetBy(dx: -slop, dy: -slop).contains(point)
         case .ellipse:
             let r = normalizedRect
-            let cx = r.midX, cy = r.midY
-            let dx = (point.x - cx) / max(r.width / 2, 0.001)
-            let dy = (point.y - cy) / max(r.height / 2, 0.001)
-            let d = sqrt(dx * dx + dy * dy)
-            return d <= 1 + slop / max(r.width / 2, 1) && d >= 1 - slop / max(r.width / 2, 1) || (d <= 1 + slop && abs(d - 1) * max(r.width, r.height) / 2 <= thickness / 2 + slop)
+            guard r.width > 0, r.height > 0 else { return false }
+            let dx = (point.x - r.midX) / (r.width / 2)
+            let dy = (point.y - r.midY) / (r.height / 2)
+            let d = dx * dx + dy * dy
+            let slopFrac = slop / max(min(r.width, r.height) / 2, 1)
+            return d <= 1.0 + slopFrac
         case .text:
             return boundingBox.insetBy(dx: -slop, dy: -slop).contains(point)
         case .select:
@@ -175,12 +173,6 @@ struct Annotation: Identifiable, Codable, Equatable {
         var copy = self
         copy.points = points.map { CGPoint(x: $0.x + delta.x, y: $0.y + delta.y) }
         return copy
-    }
-
-    private func near(_ rect: CGRect, _ point: CGPoint, slop: CGFloat) -> Bool {
-        let dx = max(rect.minX - point.x, 0, point.x - rect.maxX)
-        let dy = max(rect.minY - point.y, 0, point.y - rect.maxY)
-        return (dx * dx + dy * dy) <= slop * slop
     }
 
     private func distanceToPolyline(_ point: CGPoint) -> CGFloat {
