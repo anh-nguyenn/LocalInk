@@ -62,9 +62,7 @@ final class AppCoordinator: NSObject, NSApplicationDelegate {
 
         controls.onStartDrawing = { [weak self] in
             guard let self else { return }
-            if !self.coordinator.state.drawingEnabled {
-                self.toggleDrawing()
-            }
+            self.toggleDrawing()
             if self.coordinator.state.drawingEnabled {
                 self.showToolbar()
             }
@@ -150,6 +148,7 @@ final class AppCoordinator: NSObject, NSApplicationDelegate {
 
         updateShortcutTitles()
         toolbar.refresh()
+        controls.update(drawingEnabled: state.drawingEnabled)
     }
 
     private func updateStatusIcon(drawing: Bool) {
