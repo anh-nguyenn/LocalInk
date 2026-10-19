@@ -35,14 +35,14 @@ LocalInk puts a transparent drawing layer over your entire desktop. Toggle it on
 3. Open it — a small LocalInk window appears with a **Start Drawing** button.
    After that, use the pencil icon in the menu bar (or Control-Option-D).
 
-> **First launch:** LocalInk is code-signed locally but not notarized with a paid Apple Developer account. If macOS blocks the first launch, right-click the app, choose **Open**, then **Open** again. You only do this once. You can also run `xattr -dr com.apple.quarantine /Applications/LocalInk.app`.
+> **First launch:** LocalInk is code-signed locally but not notarized with a paid Apple Developer account. If macOS blocks the first launch, open **System Settings → Privacy & Security**, click **Open Anyway**, then confirm. On macOS versions that still allow it, you can also right-click the app and choose **Open**. You only do this once. You can also run `xattr -dr com.apple.quarantine /Applications/LocalInk.app`.
 
 ## Features
 
 ### Annotate over anything
 - Pen, arrow, line, rectangle, ellipse, highlighter, and text
 - Solid redaction blocks and a sequential counter for step-by-step walkthroughs
-- Shift-constrained squares, circles, and 45° line snapping
+- Shift-constrained squares, circles, and 45° arrow snapping
 - Adjustable color, stroke width, and opacity; changes never recolor old marks
 - Auto-erase after a configurable delay, or keep marks until you clear them
 
@@ -116,7 +116,7 @@ LocalInk keeps one transparent, click-through panel per display and stores annot
 - **Drawing:** overlays capture the gesture and create a mark.
 - **Temporary pass-through:** the gesture goes to the app underneath, then drawing resumes.
 
-A single renderer draws both the live overlay and exported images, so geometry always agrees.
+The live overlay and PNG export share one renderer, and SVG uses the same geometry, so exported marks stay aligned with what you drew.
 
 ## Compatibility
 
@@ -167,7 +167,7 @@ CODESIGN_IDENTITY="Developer ID Application: Your Name (TEAMID)" ./build.sh
 Sources/
   main.swift              App entry point
   AppCoordinator.swift    Menu bar, lifecycle, actions, export flow
-  ControlWindowController.swift  Visible Start Drawing / controls window
+  ControlWindowController.swift Visible Start Drawing / controls window
   StateController.swift   Active modes and the input-capture decision
   OverlayCoordinator.swift One panel per display, undo/redo, editing commands
   DrawingOverlay.swift    Rendering and pointer input
@@ -193,7 +193,8 @@ LocalInk is designed to be local by default:
 - No network code at runtime
 - Raw keystrokes, pointer histories, captured images, and clipboard contents are never logged
 - Screen content is captured only when you start zoom or export, and images are written only where you choose
-- Capture streams and input monitors stop on quit, sleep, and permission loss
+- Capture streams stop on quit and sleep; no capture stream is left running while zoom is off
+- LocalInk's own controls are excluded from captures
 
 ## Contributing
 

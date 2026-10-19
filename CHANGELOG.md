@@ -16,6 +16,13 @@ All notable changes to LocalInk are documented here. The format is based on
   falls back to an “Ink” title if an SF Symbol is unavailable.
 - Added a startup checkbox and optional Dock icon to the controls window.
 
+### Documentation
+
+- Redesigned the marketing website with a modern product layout, new visuals, and
+  an English/Vietnamese language toggle.
+- Refreshed the README, product specification, and contributing guide to match
+  the shipped 1.0.2 product and its known limitations.
+
 ## [1.0.1] — 2026-10-20
 
 ### Fixed
@@ -56,7 +63,7 @@ First public release.
   click-through when drawing is off.
 - Drawing tools: pen, arrow, line, rectangle, ellipse, highlighter, text, solid
   redaction, sequential counter, eraser, and selection.
-- Constrained shapes and 45° line snapping with Shift.
+- Constrained shapes and 45° arrow snapping with Shift.
 - Command-based undo and redo, plus select, move, delete, copy, and paste.
 - Cursor halo with size, color, opacity, and ring-only controls, plus click ripples.
 - Spotlight that dims the screen outside an aperture around the pointer.

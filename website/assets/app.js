@@ -65,7 +65,7 @@
         "Use pens, highlighters, text, arrows, and shapes to emphasize a point in real time — over slides, code, PDFs, videos, or a live demo.",
       "feature1.b1": "Pen, arrow, line, rectangle, ellipse, highlighter, and text",
       "feature1.b2": "Solid redaction and a sequential counter",
-      "feature1.b3": "Shift-constrained shapes and 45° line snapping",
+      "feature1.b3": "Shift-constrained shapes and 45° arrow snapping",
       "feature1.link": "Download for Mac →",
       "feature1.imageAlt": "Annotated slide with an arrow and a circle",
 
@@ -293,7 +293,7 @@
         "Dùng bút, bút dạ quang, văn bản, mũi tên và hình khối để nhấn mạnh ý tưởng ngay lập tức — trên slide, code, PDF, video hoặc một buổi demo trực tiếp.",
       "feature1.b1": "Bút, mũi tên, đường thẳng, chữ nhật, ellipse, bút dạ quang và văn bản",
       "feature1.b2": "Che thông tin dạng khối và bộ đếm tuần tự",
-      "feature1.b3": "Hình khối ràng buộc bằng Shift và đường thẳng bám 45°",
+      "feature1.b3": "Hình khối ràng buộc bằng Shift và mũi tên bám 45°",
       "feature1.link": "Tải cho Mac →",
       "feature1.imageAlt": "Slide được chú thích với một mũi tên và một vòng tròn",
 

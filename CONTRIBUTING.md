@@ -14,8 +14,9 @@ safe for the people who present with the app.
 ## Build and test
 
 ```bash
-./build.sh          # universal debug/release build into dist/LocalInk.app
+./build.sh          # universal release build into dist/LocalInk.app
 ./scripts/test.sh   # headless geometry, rendering, and export tests
+./release.sh        # versioned ZIP and DMG artifacts under dist/
 ```
 
 Run the app and exercise the change on a real desktop session. A compiled app is
@@ -41,6 +42,13 @@ not the same as a tested release.
 - Do not add code comments that restate the obvious. Comment non-obvious tradeoffs.
 - Match the formatting and naming of the surrounding code.
 - Avoid unbounded stroke arrays and undo history.
+
+## Website
+
+The marketing site lives in `website/` and is deployed by the GitHub Pages
+workflow. It supports English and Vietnamese; any copy change must update both
+languages in `website/assets/app.js`. Keep the page structure and translations in
+sync, and run `node --check website/assets/app.js` before opening a pull request.
 
 ## Pull requests
 
