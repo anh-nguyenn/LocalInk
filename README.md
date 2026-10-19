@@ -1,66 +1,212 @@
-# LocalInk — offline macOS Presentify-style starter app
+<div align="center">
 
-A native menu-bar application that draws on a transparent, always-on-top overlay across your Mac screens. **No server, cloud, Python, Node, or subscription.**
+<img src="website/assets/icon-256.png" width="120" alt="LocalInk app icon" />
 
-## Requirements
+# LocalInk
 
-- macOS 13 or newer
-- Xcode Command Line Tools (`xcode-select --install` if not installed)
+**Draw on anything. Interrupt nothing.**
 
-## Build and run
+A lightweight, offline macOS menu-bar app for drawing, highlighting, and spotlighting your screen during presentations, lessons, demos, and screen recordings.
 
-Open Terminal in this folder, then:
+[![Release](https://img.shields.io/github/v/release/anh-nguyenn/LocalInk?color=ff6b4a&label=release)](https://github.com/anh-nguyenn/LocalInk/releases/latest)
+[![License: MIT](https://img.shields.io/badge/license-MIT-46d68a.svg)](LICENSE)
+[![Platform](https://img.shields.io/badge/platform-macOS%2013%2B-111.svg)](#compatibility)
+[![Website](https://img.shields.io/badge/website-live-ffb84a.svg)](https://anh-nguyenn.github.io/LocalInk/)
+
+[Download](#download) · [Features](#features) · [Shortcuts](#keyboard-shortcuts) · [Build from source](#build-from-source) · [Website](https://anh-nguyenn.github.io/LocalInk/)
+
+</div>
+
+---
+
+![LocalInk annotating a slide with a circle, arrow, cursor halo, and spotlight](website/assets/demo.gif)
+
+LocalInk puts a transparent drawing layer over your entire desktop. Toggle it on, make your point, and toggle it off — every click, drag, and scroll goes straight back to the app underneath. Core drawing and pointer effects work with no account, no network, and no screen-capture permission.
+
+## Download
+
+| Build | Link | Notes |
+| --- | --- | --- |
+| Universal ZIP | [LocalInk.zip](https://github.com/anh-nguyenn/LocalInk/releases/latest/download/LocalInk.zip) | ~0.6 MB · Apple Silicon + Intel |
+| Disk image | [LocalInk.dmg](https://github.com/anh-nguyenn/LocalInk/releases/latest/download/LocalInk.dmg) | Drag to Applications |
+
+1. Unzip the download (or open the DMG).
+2. Drag **LocalInk.app** into **Applications**.
+3. Open it — LocalInk appears as a pencil icon in the menu bar, not in the Dock.
+
+> **First launch:** LocalInk is code-signed locally but not notarized with a paid Apple Developer account. If macOS blocks the first launch, right-click the app, choose **Open**, then **Open** again. You only do this once. You can also run `xattr -dr com.apple.quarantine /Applications/LocalInk.app`.
+
+## Features
+
+### Annotate over anything
+- Pen, arrow, line, rectangle, ellipse, highlighter, and text
+- Solid redaction blocks and a sequential counter for step-by-step walkthroughs
+- Shift-constrained squares, circles, and 45° line snapping
+- Adjustable color, stroke width, and opacity; changes never recolor old marks
+- Auto-erase after a configurable delay, or keep marks until you clear them
+
+### Direct attention
+- Cursor halo with configurable size, color, opacity, and ring-only mode
+- Spotlight that dims the screen outside an aperture around the pointer
+- Click ripples for visible feedback
+- Halo and spotlight are click-through: the app underneath stays fully interactive
+
+### Edit and refine
+- Command-based undo and redo
+- Select, move, delete, copy, and paste annotations
+- Eraser that removes marks as you drag
+- Whiteboard with a separate canvas and custom background
+- Floating toolbar for tools, colors, width, effects, and clear
+
+### Zoom and share
+- Cursor-following magnifier lens
+- Full-screen zoom
+- Annotated PNG export, clipboard copy, and SVG export
+- LocalInk's own controls are excluded from captures
+
+### Native and private
+- Built with Swift and AppKit; no web runtime
+- Universal binary for Apple Silicon and Intel
+- No account, telemetry, analytics, or runtime network access
+- Screen Recording permission is requested only for zoom and export
+
+## Keyboard shortcuts
+
+Global shortcuts work even when LocalInk is in the background. They can be changed in **Settings → Shortcuts**.
+
+| Shortcut | Action |
+| --- | --- |
+| `⌃⌥D` | Toggle drawing |
+| `⌃⌥H` | Toggle cursor halo |
+| `⌃⌥L` | Toggle spotlight |
+| `⌃⌥Z` | Undo |
+| `⌃⌥Y` | Redo |
+| `⌃⌥K` | Clear all drawings |
+| `⌃⌥P` | Toggle temporary click-through |
+| `⌃⌥T` | Show or hide the toolbar |
+
+While drawing is active, these single keys select tools:
+
+| Key | Tool | Key | Tool |
+| --- | --- | --- | --- |
+| `P` | Pen | `T` | Text |
+| `A` | Arrow | `X` | Redact |
+| `L` | Line | `N` | Counter |
+| `R` | Rectangle | `E` | Eraser |
+| `O` | Ellipse | `V` | Select |
+| `H` | Highlighter | `C` | Cycle color |
+
+| Key | Action |
+| --- | --- |
+| `[` / `]` | Decrease / increase width |
+| `Delete` | Delete selection, or the last mark |
+| `Escape` | Deselect, or exit drawing |
+| `⌘Z` / `⇧⌘Z` | Undo / redo |
+| `⌘C` / `⌘V` | Copy / paste selection |
+| `⌘R` | Reset the counter |
+| Hold `⌘` | Temporarily click through to the app underneath |
+
+## How it works
+
+LocalInk keeps one transparent, click-through panel per display and stores annotations as vector objects in each display's logical coordinates. A single state controller decides whether overlays capture the mouse:
+
+- **Idle:** every event reaches the app underneath.
+- **Halo / spotlight only:** effects follow the pointer, clicks still pass through.
+- **Drawing:** overlays capture the gesture and create a mark.
+- **Temporary pass-through:** the gesture goes to the app underneath, then drawing resumes.
+
+A single renderer draws both the live overlay and exported images, so geometry always agrees.
+
+## Compatibility
+
+- macOS 13 Ventura or later
+- Apple Silicon and Intel (universal)
+- Multiple displays with mixed scaling and negative origins
+- Fullscreen apps and Spaces
+- Works over Keynote, PowerPoint, Google Slides, Zoom, Google Meet, OBS, Figma, VS Code, PDFs, and any other app
+
+> When sharing your screen, sharing the **entire display** generally captures overlays correctly. Sharing a single window may not include them, so check your meeting or recording app first.
+
+## Build from source
+
+Requirements:
+- macOS 13 or later
+- A full Xcode installation (recommended), or matching Xcode Command Line Tools
 
 ```bash
+git clone https://github.com/anh-nguyenn/LocalInk.git
+cd LocalInk
 ./build.sh
 open dist/LocalInk.app
 ```
 
-The app appears as a pencil icon in your **menu bar**, not in the Dock. Click it to pick a drawing tool/color.
+`build.sh` compiles every Swift file in `Sources/`, builds a universal binary, copies the icon and Info.plist, and ad-hoc signs the bundle. If a full Xcode installation is present, it is selected automatically.
 
-## Shortcuts
+Run the headless logic tests:
 
-| Shortcut | Action |
-| --- | --- |
-| Control + Option + D | Toggle draw mode (on = mouse draws; off = click-through) |
-| Control + Option + H | Toggle cursor highlight ring |
-| Control + Option + L | Toggle spotlight |
-| Control + Option + Z | Undo most recent stroke in last active display |
-| Control + Option + K | Clear drawings on every display |
+```bash
+./scripts/test.sh
+```
 
-Menu-bar submenu: choose Pen / Arrow / Rectangle / Ellipse and Red / Yellow / Green / Blue / White.
+Create release artifacts (ZIP + DMG under `dist/`):
 
-## What is implemented
+```bash
+./release.sh
+```
 
-- Native `.app` bundle, status bar utility
-- Fullscreen transparent AppKit overlays, one per display
-- Freehand drawing, arrows, rectangles, ellipses
-- Cursor halo, spotlight with dimmed background
-- Click-through when draw mode is disabled
-- Global shortcuts without logging all keyboard input
-- Undo and clear
-- Everything runs locally; no networking code, accounts, or telemetry
+To sign with a Developer ID instead of ad-hoc:
 
-## What is *not* implemented yet
+```bash
+CODESIGN_IDENTITY="Developer ID Application: Your Name (TEAMID)" ./build.sh
+```
 
-- Magnifier/zoom (requires proper screen capture using Apple's ScreenCaptureKit and user permission)
-- Screenshot export, text, whiteboard, permanent settings, auto-fade, polished settings UI
-- Advanced annotated screenshot handling, per-display adaptive scaling, copy/paste, notarized distribution
+## Project structure
 
-This is a **starter**, not a feature-complete Presentify clone.
+```text
+Sources/
+  main.swift              App entry point
+  AppCoordinator.swift    Menu bar, lifecycle, actions, export flow
+  StateController.swift   Active modes and the input-capture decision
+  OverlayCoordinator.swift One panel per display, undo/redo, editing commands
+  DrawingOverlay.swift    Rendering and pointer input
+  Annotation.swift        Vector model, tools, hit-testing
+  Renderer.swift          Shared live and export renderer
+  CaptureService.swift    ScreenCaptureKit permission and capture
+  ExportService.swift     PNG, clipboard, and SVG composition
+  LensController.swift    Magnifier and full-screen zoom
+  ToolbarController.swift Floating toolbar
+  SettingsController.swift Native settings window
+  HotkeyManager.swift     Global Carbon shortcuts
+  Preferences.swift       UserDefaults and shortcut migration
+Tests/Logic/              Headless geometry and export tests
+scripts/                  Icon, demo GIF, and test helpers
+website/                  Static marketing site
+```
 
-## Practical notes
+## Privacy
 
-- The drawing overlay intentionally captures mouse clicks while Draw mode is enabled; press `Control+Option+D` again to interact with other apps. Spotlight/halo can stay visible.
-- Drawing strokes are in RAM and are lost on app quit or if monitors are reconfigured.
-- macOS may warn about an unsigned app. Build locally from source and launch using `open dist/LocalInk.app`. For redistribution, sign and notarize the app with an Apple Developer account.
-- For video calls, sharing the *entire screen* generally works better than sharing just one application window for desktop overlays. Verify behavior in your preferred meeting/recording app.
-- The app has been compiled on macOS 26.6.2 with Xcode 27.1. Its menu-bar behavior has not yet been verified in a normal desktop session.
+LocalInk is designed to be local by default:
 
-## Suggested next features
+- No account, telemetry, analytics, or automatic uploads
+- No network code at runtime
+- Raw keystrokes, pointer histories, captured images, and clipboard contents are never logged
+- Screen content is captured only when you start zoom or export, and images are written only where you choose
+- Capture streams and input monitors stop on quit, sleep, and permission loss
 
-1. On-screen tool palette with width and opacity controls
-2. User-configurable hotkeys and persisted preferences
-3. ScreenCaptureKit magnifier and screenshot exporter
-4. Annotation selection and drag / laser pointer
-5. Apple Silicon universal release packaging, signing, notarization
+## Contributing
+
+Issues and pull requests are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a large change. For bug reports, include your Mac model, macOS version, and the steps to reproduce.
+
+## License
+
+Released under the [MIT License](LICENSE). See [CHANGELOG.md](CHANGELOG.md) for release history.
+
+---
+
+<div align="center">
+
+Made by **Anh Nguyen (Jerry)**
+
+[Website](https://anh-nguyenn.github.io/LocalInk/) · [GitHub](https://github.com/anh-nguyenn/LocalInk) · [Releases](https://github.com/anh-nguyenn/LocalInk/releases)
+
+</div>
