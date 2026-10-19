@@ -6,20 +6,28 @@ import CoreGraphics
 enum DrawingTool: String, CaseIterable, Codable {
     case pen
     case arrow
+    case line
     case rectangle
     case ellipse
     case text
     case highlighter
+    case redact
+    case counter
+    case eraser
     case select
 
     var displayName: String {
         switch self {
         case .pen: return "Pen"
         case .arrow: return "Arrow"
+        case .line: return "Line"
         case .rectangle: return "Rectangle"
         case .ellipse: return "Ellipse"
         case .text: return "Text"
         case .highlighter: return "Highlighter"
+        case .redact: return "Redact"
+        case .counter: return "Counter"
+        case .eraser: return "Eraser"
         case .select: return "Select"
         }
     }
@@ -28,15 +36,40 @@ enum DrawingTool: String, CaseIterable, Codable {
         switch self {
         case .pen: return "pencil.tip"
         case .arrow: return "arrow.up.right"
+        case .line: return "line.diagonal"
         case .rectangle: return "rectangle"
         case .ellipse: return "circle"
         case .text: return "text.cursor"
         case .highlighter: return "highlighter"
+        case .redact: return "eye.slash"
+        case .counter: return "number.circle"
+        case .eraser: return "eraser"
         case .select: return "cursorarrow.motionlines"
         }
     }
 
-    var isMarkTool: Bool { self != .select }
+    var isMarkTool: Bool { self != .select && self != .eraser }
+
+    static let paletteOrder: [DrawingTool] = [
+        .pen, .arrow, .line, .rectangle, .ellipse, .text, .highlighter, .redact, .counter, .eraser, .select
+    ]
+
+    // Single-key shortcut used while drawing is active.
+    var keyCharacter: String? {
+        switch self {
+        case .pen: return "p"
+        case .arrow: return "a"
+        case .line: return "l"
+        case .rectangle: return "r"
+        case .ellipse: return "o"
+        case .text: return "t"
+        case .highlighter: return "h"
+        case .redact: return "x"
+        case .counter: return "n"
+        case .eraser: return "e"
+        case .select: return "v"
+        }
+    }
 }
 
 // MARK: - Color
@@ -126,6 +159,11 @@ struct Annotation: Identifiable, Codable, Equatable {
             let size = (text as NSString).size(withAttributes: [.font: NSFont.systemFont(ofSize: fontSize)])
             return CGRect(origin: points.first ?? .zero, size: size)
         }
+        if tool == .counter, let center = points.first {
+            let radius = fontSize * 0.65
+            return CGRect(x: center.x - radius, y: center.y - radius,
+                          width: radius * 2, height: radius * 2)
+        }
         guard let first = points.first else { return .zero }
         var minX = first.x, maxX = first.x, minY = first.y, maxY = first.y
         for p in points {
@@ -143,9 +181,9 @@ struct Annotation: Identifiable, Codable, Equatable {
         switch tool {
         case .pen, .highlighter:
             return distanceToPolyline(point) <= thickness / 2 + slop
-        case .arrow:
+        case .arrow, .line:
             return distanceToSegment(point) <= thickness / 2 + slop
-        case .rectangle:
+        case .rectangle, .redact:
             return normalizedRect.insetBy(dx: -slop, dy: -slop).contains(point)
         case .ellipse:
             let r = normalizedRect
@@ -155,9 +193,13 @@ struct Annotation: Identifiable, Codable, Equatable {
             let d = dx * dx + dy * dy
             let slopFrac = slop / max(min(r.width, r.height) / 2, 1)
             return d <= 1.0 + slopFrac
+        case .counter:
+            guard let center = points.first else { return false }
+            let radius = fontSize * 0.65 + slop
+            return hypot(point.x - center.x, point.y - center.y) <= radius
         case .text:
             return boundingBox.insetBy(dx: -slop, dy: -slop).contains(point)
-        case .select:
+        case .eraser, .select:
             return false
         }
     }

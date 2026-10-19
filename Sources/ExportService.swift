@@ -97,7 +97,7 @@ enum ExportService {
                 var d = "M \(first.x) \(flipY(first.y))"
                 for p in mark.points.dropFirst() { d += " L \(p.x) \(flipY(p.y))" }
                 elements.append("<path d=\"\(d)\" fill=\"none\" stroke=\"\(stroke)\" stroke-width=\"\(mark.thickness)\" stroke-linecap=\"round\" stroke-linejoin=\"round\" opacity=\"\(opacity)\"/>")
-            case .arrow:
+            case .arrow, .line:
                 guard let first = mark.points.first, let last = mark.points.last else { continue }
                 elements.append("<line x1=\"\(first.x)\" y1=\"\(flipY(first.y))\" x2=\"\(last.x)\" y2=\"\(flipY(last.y))\" stroke=\"\(stroke)\" stroke-width=\"\(mark.thickness)\" stroke-linecap=\"round\" opacity=\"\(opacity)\"/>")
             case .rectangle:
@@ -106,6 +106,15 @@ enum ExportService {
             case .ellipse:
                 let r = mark.normalizedRect
                 elements.append("<ellipse cx=\"\(r.midX)\" cy=\"\(flipY(r.midY))\" rx=\"\(r.width / 2)\" ry=\"\(r.height / 2)\" fill=\"none\" stroke=\"\(stroke)\" stroke-width=\"\(mark.thickness)\" opacity=\"\(opacity)\"/>")
+            case .redact:
+                let r = mark.normalizedRect
+                elements.append("<rect x=\"\(r.minX)\" y=\"\(flipY(r.maxY))\" width=\"\(r.width)\" height=\"\(r.height)\" fill=\"\(stroke)\" opacity=\"\(opacity)\"/>")
+            case .counter:
+                guard let center = mark.points.first else { continue }
+                let radius = mark.fontSize * 0.65
+                let label = mark.text ?? ""
+                elements.append("<circle cx=\"\(center.x)\" cy=\"\(flipY(center.y))\" r=\"\(radius)\" fill=\"\(stroke)\" stroke=\"#FFFFFF\" stroke-width=\"\(max(1.5, radius * 0.08))\"/>")
+                elements.append("<text x=\"\(center.x)\" y=\"\(flipY(center.y))\" fill=\"#FFFFFF\" font-size=\"\(mark.fontSize * 0.95)\" font-family=\"system-ui\" font-weight=\"bold\" text-anchor=\"middle\" dominant-baseline=\"central\">\(label)</text>")
             case .text:
                 guard let text = mark.text, let origin = mark.points.first else { continue }
                 let escaped = text
@@ -113,7 +122,7 @@ enum ExportService {
                     .replacingOccurrences(of: "<", with: "&lt;")
                     .replacingOccurrences(of: ">", with: "&gt;")
                 elements.append("<text x=\"\(origin.x)\" y=\"\(flipY(origin.y))\" fill=\"\(stroke)\" font-size=\"\(mark.fontSize)\" font-family=\"system-ui\" opacity=\"\(opacity)\">\(escaped)</text>")
-            case .select:
+            case .eraser, .select:
                 continue
             }
         }

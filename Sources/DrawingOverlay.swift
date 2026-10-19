@@ -50,6 +50,8 @@ final class DrawingOverlay: NSView {
     private var activeTextEditor: TextAnnotationEditor?
     private var rippleOrigin: CGPoint?
     private var rippleStart: TimeInterval = 0
+    private var erasing = false
+    private var erasedThisGesture: [Annotation] = []
 
     private var prefs: Preferences { .shared }
 
@@ -185,13 +187,33 @@ final class DrawingOverlay: NSView {
             return
         }
 
+        if tool == .eraser {
+            beginErasing(at: point)
+            return
+        }
+
+        if tool == .counter {
+            let mark = Annotation(tool: .counter,
+                                  points: [point],
+                                  color: prefs.inkColor,
+                                  thickness: prefs.inkWidth,
+                                  opacity: 1,
+                                  text: "\(coordinator?.takeNextCounter() ?? 1)",
+                                  fontSize: max(20, prefs.inkWidth * 6))
+            coordinator?.commitMark(mark, on: self)
+            needsDisplay = true
+            return
+        }
+
         let expiry = prefs.autoEraseDelay > 0 ? prefs.autoEraseDelay : nil
+        let color: InkColor = tool == .redact ? .black : prefs.inkColor
+        let opacity: CGFloat = tool == .redact ? 1 : prefs.inkOpacity
         let mark = Annotation(tool: tool,
                               points: [point],
-                              color: prefs.inkColor,
+                              color: color,
                               thickness: prefs.inkWidth,
-                              opacity: prefs.inkOpacity,
-                              expiry: expiry)
+                              opacity: opacity,
+                              expiry: tool == .redact ? nil : expiry)
         currentMark = mark
         needsDisplay = true
     }
@@ -199,6 +221,11 @@ final class DrawingOverlay: NSView {
     override func mouseDragged(with event: NSEvent) {
         guard drawingEnabled else { return }
         let point = convert(event.locationInWindow, from: nil)
+
+        if erasing {
+            eraseAt(point)
+            return
+        }
 
         if selectedID != nil, moveOrigin != nil {
             moveDelta = CGPoint(x: point.x - moveOrigin!.x, y: point.y - moveOrigin!.y)
@@ -221,6 +248,11 @@ final class DrawingOverlay: NSView {
 
     override func mouseUp(with event: NSEvent) {
         guard drawingEnabled else { return }
+
+        if erasing {
+            finishErasing()
+            return
+        }
 
         if selectedID != nil, moveOrigin != nil {
             finishSelectionMove()
@@ -355,6 +387,49 @@ final class DrawingOverlay: NSView {
             let text = editor.string
             editor.onCommit?(text)
         }
+    }
+
+    // MARK: Eraser
+
+    private func beginErasing(at point: CGPoint) {
+        erasing = true
+        erasedThisGesture = []
+        eraseAt(point)
+    }
+
+    private func eraseAt(_ point: CGPoint) {
+        let hits = activeMarks.filter { $0.contains(point, slop: 8) }
+        for mark in hits where !erasedThisGesture.contains(where: { $0.id == mark.id }) {
+            erasedThisGesture.append(mark)
+            removeMark(id: mark.id)
+        }
+    }
+
+    private func finishErasing() {
+        erasing = false
+        if !erasedThisGesture.isEmpty {
+            coordinator?.registerErase(erasedThisGesture, on: self)
+            erasedThisGesture = []
+        }
+    }
+
+    var isErasing: Bool { erasing }
+
+    // MARK: Text editing state
+
+    var isEditingText: Bool { activeTextEditor != nil }
+
+    func cancelTextEditing() {
+        activeTextEditor?.onCancel?()
+    }
+
+    func cancelInProgressMark() {
+        currentMark = nil
+        moveOrigin = nil
+        moveDelta = .zero
+        if erasing { finishErasing() }
+        if activeTextEditor != nil { activeTextEditor?.onCancel?() }
+        needsDisplay = true
     }
 
     // MARK: Model access (called by coordinator + undo stack)

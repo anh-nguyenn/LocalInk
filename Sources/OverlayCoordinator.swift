@@ -62,6 +62,7 @@ final class OverlayCoordinator {
         overlays.removeAll()
         undoStack.removeAll()
         annotationClipboard.removeAll()
+        state.counterNext = 1
 
         for screen in NSScreen.screens {
             let panel = NSPanel(contentRect: screen.frame,
@@ -97,6 +98,26 @@ final class OverlayCoordinator {
             return overlays[index]
         }
         return nil
+    }
+
+    func takeNextCounter() -> Int {
+        let value = state.counterNext
+        state.counterNext += 1
+        return value
+    }
+
+    func focusOverlayUnderMouse() {
+        let mouse = NSEvent.mouseLocation
+        for (index, window) in windows.enumerated() where window.frame.contains(mouse) {
+            window.makeKeyAndOrderFront(nil)
+            window.makeFirstResponder(overlays[index])
+            return
+        }
+        windows.first?.makeKeyAndOrderFront(nil)
+    }
+
+    func resetCounter() {
+        state.counterNext = 1
     }
 
     func startTimer() {
@@ -136,6 +157,9 @@ final class OverlayCoordinator {
             overlay.showSpotlight = state.spotlightEnabled
             overlay.tool = state.activeTool
             overlay.whiteboardActive = state.whiteboardEnabled
+            if !state.drawingEnabled {
+                overlay.cancelInProgressMark()
+            }
             overlay.needsDisplay = true
         }
         onChange?()
@@ -190,6 +214,7 @@ final class OverlayCoordinator {
     }
 
     func clearAllDisplays() {
+        state.counterNext = 1
         var snapshots: [(DrawingOverlay, [Annotation], [Annotation])] = []
         for overlay in overlays {
             snapshots.append((overlay, overlay.marks, overlay.boardMarks))
@@ -217,6 +242,31 @@ final class OverlayCoordinator {
             redo: { [weak overlay] in overlay?.insertMarks(marks) }
         ))
         onChange?()
+    }
+
+    // Marks have already been removed by the eraser; register a single undo
+    // entry for the whole gesture.
+    func registerErase(_ removed: [Annotation], on overlay: DrawingOverlay) {
+        guard !removed.isEmpty else { return }
+        let ids = removed.map { $0.id }
+        undoStack.register(EditAction(
+            undo: { [weak overlay] in overlay?.insertMarks(removed) },
+            redo: { [weak overlay] in overlay?.removeMarks(ids: ids) }
+        ))
+        onChange?()
+    }
+
+    func isEditingText() -> Bool {
+        overlays.contains { $0.isEditingText }
+    }
+
+    func cancelTextEditing() {
+        overlays.forEach { $0.cancelTextEditing() }
+    }
+
+    func deleteLastMark(on overlay: DrawingOverlay) {
+        guard let last = overlay.activeMarks.last else { return }
+        deleteMark(id: last.id, on: overlay)
     }
 
     func undo() { undoStack.undo(); onChange?() }

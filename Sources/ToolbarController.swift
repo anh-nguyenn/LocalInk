@@ -45,7 +45,7 @@ final class ToolbarController {
     }
 
     private func build() {
-        let tools = [DrawingTool.pen, .arrow, .rectangle, .ellipse, .text, .highlighter, .select]
+        let tools = DrawingTool.paletteOrder
         let toolRow = NSStackView()
         toolRow.orientation = .horizontal
         toolRow.spacing = 4
@@ -168,7 +168,7 @@ final class ToolbarController {
     // MARK: Actions
 
     @objc private func toolTapped(_ sender: NSButton) {
-        let tools = [DrawingTool.pen, .arrow, .rectangle, .ellipse, .text, .highlighter, .select]
+        let tools = DrawingTool.paletteOrder
         guard sender.tag < tools.count else { return }
         onTool?(tools[sender.tag])
     }

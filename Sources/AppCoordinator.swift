@@ -26,6 +26,7 @@ final class AppCoordinator: NSObject, NSApplicationDelegate {
     private var toolMenuItems: [DrawingTool: NSMenuItem] = [:]
     private var colorMenuItems: [InkColor: NSMenuItem] = [:]
     private var passThroughMonitor: Any?
+    private var keyMonitor: Any?
 
     // MARK: Lifecycle
 
@@ -65,6 +66,7 @@ final class AppCoordinator: NSObject, NSApplicationDelegate {
         hotkeys.install()
         coordinator.startTimer()
         installPassThroughMonitor()
+        installDrawingKeyMonitor()
 
         NotificationCenter.default.addObserver(self,
             selector: #selector(displaysChanged),
@@ -84,6 +86,7 @@ final class AppCoordinator: NSObject, NSApplicationDelegate {
         hotkeys.uninstall()
         lens.stop()
         if let monitor = passThroughMonitor { NSEvent.removeMonitor(monitor) }
+        if let monitor = keyMonitor { NSEvent.removeMonitor(monitor) }
     }
 
     @objc private func displaysChanged() { coordinator.makeWindows() }
@@ -200,6 +203,7 @@ final class AppCoordinator: NSObject, NSApplicationDelegate {
         addItem("Copy Selected", #selector(copySelection), menu)
         addItem("Paste", #selector(pasteSelection), menu)
         addItem("Delete Selected", #selector(deleteSelection), menu)
+        addItem("Reset Counter", #selector(resetCounter), menu)
 
         menu.addItem(.separator())
         toolbarMenuItem = addItem("Show Toolbar", #selector(toggleToolbar), menu)
@@ -254,6 +258,120 @@ final class AppCoordinator: NSObject, NSApplicationDelegate {
             state.passThroughHeld = false
         }
         coordinator.applyState()
+        if state.drawingEnabled {
+            NSApp.activate(ignoringOtherApps: true)
+            coordinator.focusOverlayUnderMouse()
+        }
+    }
+
+    private func installDrawingKeyMonitor() {
+        keyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
+            guard let self else { return event }
+            guard self.coordinator.state.drawingEnabled else { return event }
+
+            if self.coordinator.isEditingText() {
+                if event.keyCode == UInt16(kVK_Escape) {
+                    self.coordinator.cancelTextEditing()
+                    return nil
+                }
+                return event
+            }
+
+            let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
+            if flags.contains(.command) {
+                switch event.charactersIgnoringModifiers?.lowercased() {
+                case "z":
+                    if flags.contains(.shift) { self.redo() } else { self.undo() }
+                    return nil
+                case "c":
+                    self.copySelection()
+                    return nil
+                case "v":
+                    self.pasteSelection()
+                    return nil
+                case "r":
+                    self.resetCounter()
+                    return nil
+                default:
+                    return event
+                }
+            }
+            if flags.contains(.control) || flags.contains(.option) {
+                return event
+            }
+
+            guard let chars = event.charactersIgnoringModifiers?.lowercased() else { return event }
+            if let tool = DrawingTool.paletteOrder.first(where: { $0.keyCharacter == chars }) {
+                self.setTool(tool)
+                return nil
+            }
+            switch chars {
+            case "c":
+                self.cycleColor()
+                return nil
+            case "[":
+                self.stepWidth(-1)
+                return nil
+            case "]":
+                self.stepWidth(1)
+                return nil
+            default:
+                break
+            }
+            if event.keyCode == UInt16(kVK_Delete) || event.keyCode == UInt16(kVK_ForwardDelete) {
+                self.deleteSelectionOrLast()
+                return nil
+            }
+            if event.keyCode == UInt16(kVK_Escape) {
+                self.handleEscape()
+                return nil
+            }
+            // Swallow remaining plain keys so the overlay does not beep while
+            // drawing. Modified shortcuts still pass through.
+            return nil
+        }
+    }
+
+    private func cycleColor() {
+        let palette = InkColor.palette
+        guard let index = palette.firstIndex(of: Preferences.shared.inkColor) else {
+            setColor(palette[0])
+            return
+        }
+        setColor(palette[(index + 1) % palette.count])
+    }
+
+    private func stepWidth(_ direction: CGFloat) {
+        let current = Preferences.shared.inkWidth
+        let increment: CGFloat = current < 10 ? 1 : 2
+        let next = min(40, max(0.5, current + direction * increment))
+        setWidth(next)
+        refreshUI()
+    }
+
+    private func deleteSelectionOrLast() {
+        guard let overlay = overlayUnderMouse() else { return }
+        if overlay.hasSelection {
+            overlay.deleteSelected()
+        } else {
+            coordinator.deleteLastMark(on: overlay)
+        }
+        refreshUI()
+    }
+
+    private func handleEscape() {
+        if let overlay = overlayUnderMouse(), overlay.hasSelection {
+            overlay.deselect()
+            return
+        }
+        if coordinator.state.drawingEnabled {
+            toggleDrawing()
+        }
+    }
+
+    @objc private func resetCounter() {
+        coordinator.resetCounter()
+        refreshUI()
     }
 
     @objc private func toggleHalo() {
@@ -535,6 +653,7 @@ final class AppCoordinator: NSObject, NSApplicationDelegate {
         • Toggle drawing with \(Preferences.shared.shortcuts[.toggleDrawing]?.displayString ?? "Control-Option-D"), then draw on any screen.
         • Toggle the cursor halo and spotlight to call out a detail while the app underneath stays clickable.
         • When drawing is on, hold ⌘ to temporarily click through to the app underneath.
+        • While drawing, press single keys for tools: P pen, A arrow, L line, R rectangle, O ellipse, H highlighter, T text, X redact, N counter, E eraser, V select. C cycles colors, [ and ] change width.
         • Zoom and image export are optional and need Screen Recording permission; everything else works locally with no network or account.
         """
         alert.alertStyle = .informational

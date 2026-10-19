@@ -70,5 +70,26 @@ check(topRight.0 > 150 && topRight.1 < 100, "composite places stroke top-right e
 let bottomLeft = pixel(composite, x: 9, y: 190)
 check(bottomLeft.0 > 150 && bottomLeft.1 < 100, "composite places stroke bottom-left endpoint correctly")
 
+// New tools: line, redact, counter
+let line = Annotation(tool: .line, points: [CGPoint(x: 0, y: 0), CGPoint(x: 100, y: 100)], color: .blue, thickness: 4)
+check(line.contains(CGPoint(x: 50, y: 50)), "line contains midpoint")
+check(!line.contains(CGPoint(x: 80, y: 20)), "line rejects off-axis point")
+
+let redact = Annotation(tool: .redact, points: [CGPoint(x: 10, y: 10), CGPoint(x: 90, y: 60)], color: .black, thickness: 4)
+check(redact.contains(CGPoint(x: 50, y: 35)), "redact contains interior")
+check(!redact.contains(CGPoint(x: 95, y: 90)), "redact rejects outside point")
+
+let counter = Annotation(tool: .counter, points: [CGPoint(x: 50, y: 50)], color: .red, thickness: 4, text: "3", fontSize: 24)
+check(counter.contains(CGPoint(x: 50, y: 50)), "counter contains center")
+check(counter.boundingBox.width > 20, "counter has a sized bounding box")
+check(ExportService.svgString(for: [redact, counter], displayHeight: 100).contains("<circle"), "svg contains counter circle")
+
+let ctx2 = CGContext(data: nil, width: 200, height: 200, bitsPerComponent: 8, bytesPerRow: 0,
+                     space: CGColorSpaceCreateDeviceRGB(),
+                     bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)!
+ctx2.scaleBy(x: 2, y: 2)
+Renderer.draw([line, redact, counter], in: ctx2)
+check(ctx2.makeImage() != nil, "renderer handles line, redact, and counter")
+
 print(failures == 0 ? "ALL TESTS PASSED" : "\(failures) TEST(S) FAILED")
 exit(failures == 0 ? 0 : 1)

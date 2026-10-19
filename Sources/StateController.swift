@@ -34,6 +34,7 @@ final class StateController {
     var zoomMode: ZoomMode = .off
     var capturePermission: CapturePermission = .unchecked
     var passThroughHeld = false
+    var counterNext = 1
 
     var drawingEnabled: Bool {
         annotationMode == .drawing

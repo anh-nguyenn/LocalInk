@@ -24,11 +24,17 @@ enum Renderer {
             drawStroke(annotation, in: ctx)
         case .arrow:
             drawArrow(annotation, in: ctx)
+        case .line:
+            drawLine(annotation, in: ctx)
         case .rectangle:
             drawShape(annotation, rounded: false, in: ctx)
         case .ellipse:
             drawShape(annotation, rounded: true, in: ctx)
-        case .select:
+        case .redact:
+            drawRedact(annotation, in: ctx)
+        case .counter:
+            drawCounter(annotation, in: ctx)
+        case .eraser, .select:
             break
         }
     }
@@ -107,6 +113,23 @@ enum Renderer {
         ctx.restoreGState()
     }
 
+    // MARK: Line
+
+    private static func drawLine(_ annotation: Annotation, in ctx: CGContext) {
+        guard let first = annotation.points.first, let last = annotation.points.last else { return }
+        let path = CGMutablePath()
+        path.move(to: first)
+        path.addLine(to: last)
+        ctx.saveGState()
+        ctx.setLineWidth(lineWidth(for: annotation))
+        ctx.setLineCap(.round)
+        ctx.setLineJoin(.round)
+        ctx.setStrokeColor(strokeColor(for: annotation).cgColor)
+        ctx.addPath(path)
+        ctx.strokePath()
+        ctx.restoreGState()
+    }
+
     // MARK: Rectangle / ellipse
 
     private static func drawShape(_ annotation: Annotation, rounded: Bool, in ctx: CGContext) {
@@ -121,6 +144,54 @@ enum Renderer {
         ctx.setStrokeColor(strokeColor(for: annotation).cgColor)
         ctx.addPath(path)
         ctx.strokePath()
+        ctx.restoreGState()
+    }
+
+    // MARK: Redact / counter
+
+    private static func drawRedact(_ annotation: Annotation, in ctx: CGContext) {
+        guard annotation.points.count >= 2 else { return }
+        let rect = annotation.normalizedRect
+        guard rect.width > 0.5, rect.height > 0.5 else { return }
+        ctx.saveGState()
+        ctx.setFillColor(annotation.color.withAlpha(annotation.opacity).nsColor.cgColor)
+        ctx.fill(rect)
+        ctx.setStrokeColor(NSColor.white.withAlphaComponent(0.18).cgColor)
+        ctx.setLineWidth(1)
+        ctx.stroke(rect)
+        ctx.restoreGState()
+    }
+
+    private static func drawCounter(_ annotation: Annotation, in ctx: CGContext) {
+        guard let center = annotation.points.first else { return }
+        let radius = annotation.fontSize * 0.65
+        let circle = CGPath(ellipseIn: CGRect(x: center.x - radius, y: center.y - radius,
+                                              width: radius * 2, height: radius * 2),
+                            transform: nil)
+        ctx.saveGState()
+        ctx.setFillColor(annotation.color.nsColor.cgColor)
+        ctx.addPath(circle)
+        ctx.fillPath()
+        ctx.setStrokeColor(NSColor.white.withAlphaComponent(0.9).cgColor)
+        ctx.setLineWidth(max(1.5, radius * 0.08))
+        ctx.addPath(circle)
+        ctx.strokePath()
+
+        let text = annotation.text ?? ""
+        if !text.isEmpty {
+            let font = NSFont.systemFont(ofSize: annotation.fontSize * 0.95, weight: .bold)
+            let attributes: [NSAttributedString.Key: Any] = [
+                .font: font,
+                .foregroundColor: NSColor.white
+            ]
+            let attributed = NSAttributedString(string: text, attributes: attributes)
+            let line = CTLineCreateWithAttributedString(attributed as CFAttributedString)
+            let bounds = CTLineGetBoundsWithOptions(line, [])
+            ctx.textMatrix = .identity
+            ctx.textPosition = CGPoint(x: center.x - bounds.width / 2 - bounds.origin.x,
+                                       y: center.y - bounds.height / 2 - bounds.origin.y)
+            CTLineDraw(line, ctx)
+        }
         ctx.restoreGState()
     }
 
