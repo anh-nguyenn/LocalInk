@@ -1,0 +1,58 @@
+LocalInk 1.0.0
+==============
+
+A local, offline macOS menu-bar app for drawing and directing attention on top
+of your desktop.
+
+Install
+-------
+
+1. Drag LocalInk.app into your Applications folder.
+2. Open it from Applications or Spotlight. LocalInk appears as a pencil icon in
+   the menu bar (it does not open a normal window).
+
+First launch and macOS Gatekeeper
+---------------------------------
+
+LocalInk is a free, open-source app that is code-signed locally but not
+notarized with an Apple Developer account. The first time you open it, macOS may
+say it cannot verify the developer.
+
+To open it anyway:
+
+  - Right-click (or Control-click) LocalInk.app, choose Open, then click Open
+    again.
+  - On recent macOS versions, open System Settings > Privacy & Security and click
+    "Open Anyway" next to LocalInk.
+  - Or, in Terminal:
+        xattr -dr com.apple.quarantine /Applications/LocalInk.app
+
+You only need to do this once.
+
+Using LocalInk
+--------------
+
+- Click the pencil icon in the menu bar to choose tools, colors, effects, export,
+  and settings.
+- Toggle drawing with Control-Option-D, or use the menu.
+- While drawing: P pen, A arrow, L line, R rectangle, O ellipse, H highlighter,
+  T text, X redact, N counter, E eraser, V select. C cycles colors, [ and ]
+  change width, and holding Command temporarily clicks through.
+- Halo and spotlight follow the pointer while the app underneath stays clickable.
+- Zoom and image export are optional and ask for Screen Recording permission.
+  Drawing, halo, and spotlight never need it.
+
+Privacy
+-------
+
+LocalInk has no account, telemetry, or network connection. Drawings stay in
+memory for the session and are lost when the app quits unless you export them.
+
+Uninstall
+---------
+
+Quit LocalInk from its menu, then move LocalInk.app to the Trash. Optional
+preferences can be removed with:
+    defaults delete dev.local.localink
+
+Made by Anh Nguyen (Jerry). MIT licensed.
