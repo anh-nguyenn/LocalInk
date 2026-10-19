@@ -1,0 +1,126 @@
+import AppKit
+import ImageIO
+import UniformTypeIdentifiers
+import CoreText
+
+// MARK: - Export service
+
+// Composes a captured display with committed annotations and writes PNG,
+// clipboard, or SVG output. Geometry agrees with the live overlay because both
+// use Renderer with the same logical-point coordinates.
+enum ExportService {
+
+    enum ExportError: Error, LocalizedError {
+        case noImage
+        case writeFailed
+
+        var errorDescription: String? {
+            switch self {
+            case .noImage: return "No image to export."
+            case .writeFailed: return "Could not write the image file."
+            }
+        }
+    }
+
+    // `screenshot` is a top-left-origin CGImage of the display. `annotations`
+    // are in the overlay's bottom-left logical coordinates; `scale` maps points
+    // to the screenshot's pixels.
+    static func renderAnnotatedImage(screenshot: CGImage,
+                                     annotations: [Annotation],
+                                     scale: CGFloat) -> CGImage {
+        let pixelW = screenshot.width
+        let pixelH = screenshot.height
+
+        // 1. Draw the annotation layer in its native bottom-left space, scaled
+        //    to backing pixels, into a transparent bitmap.
+        guard let annCtx = CGContext(data: nil, width: pixelW, height: pixelH,
+                                     bitsPerComponent: 8, bytesPerRow: 0,
+                                     space: CGColorSpaceCreateDeviceRGB(),
+                                     bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else {
+            return screenshot
+        }
+        annCtx.scaleBy(x: scale, y: scale)
+        Renderer.draw(annotations, in: annCtx)
+        guard let annImage = annCtx.makeImage() else { return screenshot }
+
+        // 2. Composite the two top-left-origin images upright.
+        guard let finalCtx = CGContext(data: nil, width: pixelW, height: pixelH,
+                                       bitsPerComponent: 8, bytesPerRow: 0,
+                                       space: CGColorSpaceCreateDeviceRGB(),
+                                       bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else {
+            return screenshot
+        }
+        finalCtx.translateBy(x: 0, y: CGFloat(pixelH))
+        finalCtx.scaleBy(x: 1, y: -1)
+        let rect = CGRect(x: 0, y: 0, width: CGFloat(pixelW), height: CGFloat(pixelH))
+        finalCtx.draw(screenshot, in: rect)
+        finalCtx.draw(annImage, in: rect)
+        return finalCtx.makeImage() ?? screenshot
+    }
+
+    static func writePNG(_ image: CGImage, to url: URL) throws {
+        guard let dest = CGImageDestinationCreateWithURL(url as CFURL,
+                                                         UTType.png.identifier as CFString,
+                                                         1, nil) else {
+            throw ExportError.writeFailed
+        }
+        CGImageDestinationAddImage(dest, image, nil)
+        guard CGImageDestinationFinalize(dest) else {
+            throw ExportError.writeFailed
+        }
+    }
+
+    static func copyToClipboard(_ image: CGImage) {
+        let size = NSSize(width: image.width, height: image.height)
+        let nsImage = NSImage(cgImage: image, size: size)
+        let pasteboard = NSPasteboard.general
+        pasteboard.clearContents()
+        pasteboard.writeObjects([nsImage])
+    }
+
+    // MARK: SVG
+
+    // Produces a standalone SVG whose top-left origin matches the display.
+    static func svgString(for annotations: [Annotation], displayHeight: CGFloat) -> String {
+        var elements: [String] = []
+        elements.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
+        elements.append("<svg xmlns=\"http://www.w3.org/2000/svg\" height=\"\(displayHeight)\">")
+
+        func flipY(_ y: CGFloat) -> CGFloat { displayHeight - y }
+
+        for mark in annotations {
+            let color = mark.color
+            let stroke = String(format: "#%02X%02X%02X",
+                                Int(color.red * 255), Int(color.green * 255), Int(color.blue * 255))
+            let opacity = color.alpha * mark.opacity
+            switch mark.tool {
+            case .pen, .highlighter:
+                guard let first = mark.points.first else { continue }
+                var d = "M \(first.x) \(flipY(first.y))"
+                for p in mark.points.dropFirst() { d += " L \(p.x) \(flipY(p.y))" }
+                elements.append("<path d=\"\(d)\" fill=\"none\" stroke=\"\(stroke)\" stroke-width=\"\(mark.thickness)\" stroke-linecap=\"round\" stroke-linejoin=\"round\" opacity=\"\(opacity)\"/>")
+            case .arrow:
+                guard let first = mark.points.first, let last = mark.points.last else { continue }
+                elements.append("<line x1=\"\(first.x)\" y1=\"\(flipY(first.y))\" x2=\"\(last.x)\" y2=\"\(flipY(last.y))\" stroke=\"\(stroke)\" stroke-width=\"\(mark.thickness)\" stroke-linecap=\"round\" opacity=\"\(opacity)\"/>")
+            case .rectangle:
+                let r = mark.normalizedRect
+                elements.append("<rect x=\"\(r.minX)\" y=\"\(flipY(r.maxY))\" width=\"\(r.width)\" height=\"\(r.height)\" fill=\"none\" stroke=\"\(stroke)\" stroke-width=\"\(mark.thickness)\" opacity=\"\(opacity)\"/>")
+            case .ellipse:
+                let r = mark.normalizedRect
+                elements.append("<ellipse cx=\"\(r.midX)\" cy=\"\(flipY(r.midY))\" rx=\"\(r.width / 2)\" ry=\"\(r.height / 2)\" fill=\"none\" stroke=\"\(stroke)\" stroke-width=\"\(mark.thickness)\" opacity=\"\(opacity)\"/>")
+            case .text:
+                guard let text = mark.text, let origin = mark.points.first else { continue }
+                let escaped = text
+                    .replacingOccurrences(of: "&", with: "&amp;")
+                    .replacingOccurrences(of: "<", with: "&lt;")
+                    .replacingOccurrences(of: ">", with: "&gt;")
+                elements.append("<text x=\"\(origin.x)\" y=\"\(flipY(origin.y))\" fill=\"\(stroke)\" font-size=\"\(mark.fontSize)\" font-family=\"system-ui\" opacity=\"\(opacity)\">\(escaped)</text>")
+            case .select:
+                continue
+            }
+        }
+
+        elements.append("</svg>")
+        return elements.joined(separator: "\n")
+    }
+}
