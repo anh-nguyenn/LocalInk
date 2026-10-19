@@ -32,7 +32,8 @@ LocalInk puts a transparent drawing layer over your entire desktop. Toggle it on
 
 1. Unzip the download (or open the DMG).
 2. Drag **LocalInk.app** into **Applications**.
-3. Open it — LocalInk appears as a pencil icon in the menu bar, not in the Dock.
+3. Open it — a small LocalInk window appears with a **Start Drawing** button.
+   After that, use the pencil icon in the menu bar (or Control-Option-D).
 
 > **First launch:** LocalInk is code-signed locally but not notarized with a paid Apple Developer account. If macOS blocks the first launch, right-click the app, choose **Open**, then **Open** again. You only do this once. You can also run `xattr -dr com.apple.quarantine /Applications/LocalInk.app`.
 
@@ -166,6 +167,7 @@ CODESIGN_IDENTITY="Developer ID Application: Your Name (TEAMID)" ./build.sh
 Sources/
   main.swift              App entry point
   AppCoordinator.swift    Menu bar, lifecycle, actions, export flow
+  ControlWindowController.swift  Visible Start Drawing / controls window
   StateController.swift   Active modes and the input-capture decision
   OverlayCoordinator.swift One panel per display, undo/redo, editing commands
   DrawingOverlay.swift    Rendering and pointer input

@@ -1,4 +1,4 @@
-LocalInk 1.0.1
+LocalInk 1.0.2
 ==============
 
 A local, offline macOS menu-bar app for drawing and directing attention on top
@@ -8,8 +8,9 @@ Install
 -------
 
 1. Drag LocalInk.app into your Applications folder.
-2. Open it from Applications or Spotlight. LocalInk appears as a pencil icon in
-   the menu bar (it does not open a normal window).
+2. Open it from Applications or Spotlight. A small LocalInk window appears with
+   a Start Drawing button. Click it to begin, or use the pencil icon in the menu
+   bar. LocalInk can also be closed to just its menu-bar icon.
 
 First launch and macOS Gatekeeper
 ---------------------------------
@@ -32,9 +33,10 @@ You only need to do this once.
 Using LocalInk
 --------------
 
-- Click the pencil icon in the menu bar to choose tools, colors, effects, export,
-  and settings.
-- Toggle drawing with Control-Option-D, or use the menu.
+- Click Start Drawing in the LocalInk window, or click the pencil icon in the
+  menu bar and choose Toggle Drawing.
+- Toggle drawing with Control-Option-D at any time. Choose Welcome & Controls
+  from the menu to reopen the LocalInk window.
 - While drawing: P pen, A arrow, L line, R rectangle, O ellipse, H highlighter,
   T text, X redact, N counter, E eraser, V select. C cycles colors, [ and ]
   change width, and holding Command temporarily clicks through.

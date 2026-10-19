@@ -4,6 +4,18 @@ All notable changes to LocalInk are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project uses
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.2] — 2026-10-20
+
+### Fixed
+
+- Opening LocalInk now shows a visible controls window with a **Start Drawing**
+  button, so the app is usable even if the menu-bar icon is missed. The window
+  can be reopened from **Welcome & Controls…** in the menu or by reopening the
+  app.
+- Drawing activation now uses the modern app-activation API, and the status icon
+  falls back to an “Ink” title if an SF Symbol is unavailable.
+- Added a startup checkbox and optional Dock icon to the controls window.
+
 ## [1.0.1] — 2026-10-20
 
 ### Fixed
@@ -64,5 +76,6 @@ First public release.
 - Headless logic tests for geometry, rendering, and export composition.
 - Marketing website with an animated product demo.
 
+[1.0.2]: https://github.com/anh-nguyenn/LocalInk/releases/tag/v1.0.2
 [1.0.1]: https://github.com/anh-nguyenn/LocalInk/releases/tag/v1.0.1
 [1.0.0]: https://github.com/anh-nguyenn/LocalInk/releases/tag/v1.0.0

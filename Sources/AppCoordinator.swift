@@ -9,6 +9,7 @@ final class AppCoordinator: NSObject, NSApplicationDelegate {
     let toolbar = ToolbarController()
     let settings = SettingsController()
     let lens = LensController()
+    let controls = ControlWindowController()
 
     private var statusItem: NSStatusItem!
     private var mouseTimer: Timer?
@@ -59,6 +60,19 @@ final class AppCoordinator: NSObject, NSApplicationDelegate {
             self?.refreshUI()
         }
 
+        controls.onStartDrawing = { [weak self] in
+            guard let self else { return }
+            if !self.coordinator.state.drawingEnabled {
+                self.toggleDrawing()
+            }
+            if self.coordinator.state.drawingEnabled {
+                self.showToolbar()
+            }
+            self.controls.close()
+        }
+        controls.onOpenSettings = { [weak self] in self?.settings.show() }
+        controls.onQuit = { NSApp.terminate(nil) }
+
         coordinator.state.activeTool = Preferences.shared.inkTool
 
         setupMenu()
@@ -78,8 +92,13 @@ final class AppCoordinator: NSObject, NSApplicationDelegate {
             name: NSWorkspace.didWakeNotification,
             object: nil)
 
-        showFirstRunHelpIfNeeded()
         refreshUI()
+        showControlsOnLaunchIfNeeded()
+    }
+
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        showControls()
+        return true
     }
 
     func applicationWillTerminate(_ notification: Notification) {
@@ -119,9 +138,7 @@ final class AppCoordinator: NSObject, NSApplicationDelegate {
             item.state = color == currentColor ? .on : .off
         }
 
-        statusItem.button?.image = NSImage(
-            systemSymbolName: state.drawingEnabled ? "pencil.circle.fill" : "pencil.tip.crop.circle",
-            accessibilityDescription: "LocalInk")
+        updateStatusIcon(drawing: state.drawingEnabled)
 
         if hotkeys.hasConflicts {
             let names = hotkeys.conflictingActions.map { $0.displayName }.joined(separator: ", ")
@@ -133,6 +150,19 @@ final class AppCoordinator: NSObject, NSApplicationDelegate {
 
         updateShortcutTitles()
         toolbar.refresh()
+    }
+
+    private func updateStatusIcon(drawing: Bool) {
+        guard let button = statusItem.button else { return }
+        let symbol = drawing ? "pencil.circle.fill" : "pencil.tip.crop.circle"
+        if let image = NSImage(systemSymbolName: symbol, accessibilityDescription: "LocalInk") {
+            button.image = image
+            button.title = ""
+        } else {
+            // Never leave the only entry point invisible if a symbol is missing.
+            button.image = nil
+            button.title = "Ink"
+        }
     }
 
     private func updateShortcutTitles() {
@@ -158,9 +188,9 @@ final class AppCoordinator: NSObject, NSApplicationDelegate {
     private func setupMenu() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         if let button = statusItem.button {
-            button.image = NSImage(systemSymbolName: "pencil.tip.crop.circle", accessibilityDescription: "LocalInk")
             button.toolTip = "LocalInk — offline screen annotation"
         }
+        updateStatusIcon(drawing: false)
 
         let menu = NSMenu(title: "LocalInk")
         menu.addItem(NSMenuItem(title: "LocalInk — Local Screen Overlay", action: nil, keyEquivalent: ""))
@@ -220,7 +250,7 @@ final class AppCoordinator: NSObject, NSApplicationDelegate {
 
         menu.addItem(.separator())
         addItem("Settings…", #selector(openSettings), menu)
-        addItem("Help", #selector(showHelp), menu)
+        addItem("Welcome & Controls…", #selector(showHelp), menu)
         menu.addItem(.separator())
         addItem("Quit LocalInk", #selector(quitApp), menu)
 
@@ -264,7 +294,7 @@ final class AppCoordinator: NSObject, NSApplicationDelegate {
         }
         coordinator.applyState()
         if state.drawingEnabled {
-            NSApp.activate(ignoringOtherApps: true)
+            ControlWindowController.activateApp()
             coordinator.focusOverlayUnderMouse()
         }
     }
@@ -629,6 +659,7 @@ final class AppCoordinator: NSObject, NSApplicationDelegate {
         alert.alertStyle = .warning
         alert.addButton(withTitle: "Open System Settings")
         alert.addButton(withTitle: "Cancel")
+        ControlWindowController.activateApp()
         if alert.runModal() == .alertFirstButtonReturn {
             if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture") {
                 NSWorkspace.shared.open(url)
@@ -643,6 +674,7 @@ final class AppCoordinator: NSObject, NSApplicationDelegate {
             alert.informativeText = message
             alert.alertStyle = .warning
             alert.addButton(withTitle: "OK")
+            ControlWindowController.activateApp()
             alert.runModal()
         }
     }
@@ -663,30 +695,24 @@ final class AppCoordinator: NSObject, NSApplicationDelegate {
     @objc private func openSettings() { settings.show() }
 
     @objc private func showHelp() {
-        showFirstRunHelp()
+        showControls()
     }
 
-    private func showFirstRunHelpIfNeeded() {
-        let key = "LocalInk.firstRunHelpShown"
-        guard !UserDefaults.standard.bool(forKey: key) else { return }
+    private func showControls() {
+        refreshUI()
+        controls.show(drawingEnabled: coordinator.state.drawingEnabled)
+    }
+
+    private func showControlsOnLaunchIfNeeded() {
+        guard Preferences.shared.showControlWindow else { return }
+        let key = "LocalInk.controlWindowShown.v2"
+        let firstRun = !UserDefaults.standard.bool(forKey: key)
         UserDefaults.standard.set(true, forKey: key)
-        showFirstRunHelp()
-    }
-
-    private func showFirstRunHelp() {
-        let alert = NSAlert()
-        alert.messageText = "Welcome to LocalInk"
-        alert.informativeText = """
-        • Click the pencil icon in the menu bar for tools, colors, and effects.
-        • Toggle drawing with \(Preferences.shared.shortcuts[.toggleDrawing]?.displayString ?? "Control-Option-D"), then draw on any screen.
-        • Toggle the cursor halo and spotlight to call out a detail while the app underneath stays clickable.
-        • When drawing is on, hold ⌘ to temporarily click through to the app underneath.
-        • While drawing, press single keys for tools: P pen, A arrow, L line, R rectangle, O ellipse, H highlighter, T text, X redact, N counter, E eraser, V select. C cycles colors, [ and ] change width.
-        • Zoom and image export are optional and need Screen Recording permission; everything else works locally with no network or account.
-        """
-        alert.alertStyle = .informational
-        alert.addButton(withTitle: "Got it")
-        alert.runModal()
+        // Avoid popping a window on every login; user-initiated launches still
+        // show the window.
+        if firstRun || !Preferences.shared.launchAtLogin {
+            showControls()
+        }
     }
 
     @objc private func quitApp() { NSApp.terminate(nil) }

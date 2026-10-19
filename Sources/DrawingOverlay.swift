@@ -386,7 +386,7 @@ final class DrawingOverlay: NSView {
         activeTextEditor = editor
         window?.makeKey()
         window?.makeFirstResponder(editor)
-        NSApp.activate(ignoringOtherApps: true)
+        ControlWindowController.activateApp()
         needsDisplay = true
     }
 

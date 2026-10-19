@@ -323,6 +323,11 @@ final class Preferences {
         set { defaults.set(newValue, forKey: "LocalInk.showDockIcon") }
     }
 
+    var showControlWindow: Bool {
+        get { defaults.object(forKey: "LocalInk.showControlWindow") as? Bool ?? true }
+        set { defaults.set(newValue, forKey: "LocalInk.showControlWindow") }
+    }
+
     var sessionRetention: String {
         get { defaults.string(forKey: "LocalInk.sessionRetention") ?? "untilQuit" }
         set { defaults.set(newValue, forKey: "LocalInk.sessionRetention") }

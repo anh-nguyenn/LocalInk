@@ -144,7 +144,7 @@ final class SettingsController: NSObject {
         build()
         window.center()
         window.makeKeyAndOrderFront(nil)
-        NSApp.activate(ignoringOtherApps: true)
+        ControlWindowController.activateApp()
     }
 
     private func build() {
