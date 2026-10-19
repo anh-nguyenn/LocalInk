@@ -63,8 +63,9 @@ final class AppCoordinator: NSObject, NSApplicationDelegate {
 
         setupMenu()
         coordinator.makeWindows()
+        coordinator.restoreSession()
         hotkeys.install()
-        coordinator.startTimer()
+        coordinator.refreshTimer()
         installPassThroughMonitor()
         installDrawingKeyMonitor()
 
@@ -82,6 +83,7 @@ final class AppCoordinator: NSObject, NSApplicationDelegate {
     }
 
     func applicationWillTerminate(_ notification: Notification) {
+        coordinator.saveSession()
         coordinator.stopTimer()
         hotkeys.uninstall()
         lens.stop()
@@ -253,9 +255,12 @@ final class AppCoordinator: NSObject, NSApplicationDelegate {
 
     @objc private func toggleDrawing() {
         let state = coordinator.state
-        state.annotationMode = state.drawingEnabled ? .off : .drawing
-        if !state.drawingEnabled {
+        if state.drawingEnabled {
+            state.annotationMode = .off
+            state.whiteboardEnabled = false
             state.passThroughHeld = false
+        } else {
+            state.annotationMode = .drawing
         }
         coordinator.applyState()
         if state.drawingEnabled {
@@ -417,12 +422,22 @@ final class AppCoordinator: NSObject, NSApplicationDelegate {
     }
 
     @objc private func toggleMagnifier() {
-        if lens.mode == .lens { lens.stop() } else { lens.start(.lens) }
+        if lens.mode == .lens {
+            lens.stop()
+        } else {
+            guard ensureCaptureAccess() else { return }
+            lens.start(.lens)
+        }
         refreshUI()
     }
 
     @objc private func toggleFullscreenZoom() {
-        if lens.mode == .fullscreen { lens.stop() } else { lens.start(.fullscreen) }
+        if lens.mode == .fullscreen {
+            lens.stop()
+        } else {
+            guard ensureCaptureAccess() else { return }
+            lens.start(.fullscreen)
+        }
         refreshUI()
     }
 
@@ -506,7 +521,11 @@ final class AppCoordinator: NSObject, NSApplicationDelegate {
     @objc private func exportSVG() {
         guard let screen = screenUnderMouse() else { return }
         guard let overlay = coordinator.overlay(for: screen.displayID) else { return }
-        let svg = ExportService.svgString(for: overlay.marks, displayHeight: screen.frame.height)
+        let background = overlay.whiteboardActive ? Preferences.shared.whiteboardColor : nil
+        let svg = ExportService.svgString(for: overlay.activeMarks,
+                                          displayWidth: screen.frame.width,
+                                          displayHeight: screen.frame.height,
+                                          background: background)
         guard let url = promptSaveURL(defaultName: "LocalInk-annotations.svg") else { return }
         do {
             try svg.write(to: url, atomically: true, encoding: .utf8)
@@ -523,12 +542,16 @@ final class AppCoordinator: NSObject, NSApplicationDelegate {
                 return
             }
             let filter = CaptureService.shared.filter(display: display, excluding: localWindowIDs(), in: content)
-            let image = try await CaptureService.shared.captureImage(filter: filter)
+            let pixelSize = CGSize(width: screen.frame.width * screen.backingScaleFactor,
+                                   height: screen.frame.height * screen.backingScaleFactor)
+            let image = try await CaptureService.shared.captureImage(filter: filter, pixelSize: pixelSize)
             let overlay = coordinator.overlay(for: screen.displayID)
+            let background = overlay?.whiteboardActive == true ? Preferences.shared.whiteboardColor : nil
             let scale = CGFloat(image.width) / screen.frame.width
             let annotated = ExportService.renderAnnotatedImage(screenshot: image,
-                                                               annotations: overlay?.marks ?? [],
-                                                               scale: scale)
+                                                               annotations: overlay?.activeMarks ?? [],
+                                                               scale: scale,
+                                                               background: background)
             if let url {
                 try ExportService.writePNG(annotated, to: url)
                 presentStatus("Saved annotated image.")
@@ -545,6 +568,11 @@ final class AppCoordinator: NSObject, NSApplicationDelegate {
 
     private func localWindowIDs() -> Set<CGWindowID> {
         var ids = Set<CGWindowID>()
+        // Include every visible app window (overlays, toolbar, lens, settings,
+        // alerts) so LocalInk's own UI never appears in exports.
+        for window in NSApp.windows where window.isVisible && window.windowNumber > 0 {
+            ids.insert(CGWindowID(window.windowNumber))
+        }
         for window in coordinator.windows {
             ids.insert(CGWindowID(window.windowNumber))
         }

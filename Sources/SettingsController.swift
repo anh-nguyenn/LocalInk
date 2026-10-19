@@ -12,8 +12,10 @@ final class ShortcutRecorderButton: NSButton {
             title = shortcut?.displayString ?? "Click to record"
         }
     }
+    private static weak var activeRecorder: ShortcutRecorderButton?
     private var monitor: Any?
     private var recording = false
+    private var originalShortcut: Shortcut?
 
     init() {
         super.init(frame: .zero)
@@ -26,9 +28,16 @@ final class ShortcutRecorderButton: NSButton {
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
+    deinit {
+        if let monitor { NSEvent.removeMonitor(monitor) }
+    }
+
     @objc private func beginRecording() {
         guard !recording else { return }
+        ShortcutRecorderButton.activeRecorder?.finishRecording(cancelled: true)
+        ShortcutRecorderButton.activeRecorder = self
         recording = true
+        originalShortcut = shortcut
         title = "Press keys…"
         monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
             self?.capture(event)
@@ -37,20 +46,40 @@ final class ShortcutRecorderButton: NSButton {
     }
 
     private func capture(_ event: NSEvent) {
-        finishRecording()
+        if event.keyCode == UInt16(kVK_Escape) {
+            finishRecording(cancelled: true)
+            return
+        }
         var modifiers: UInt32 = 0
         if event.modifierFlags.contains(.control) { modifiers |= UInt32(controlKey) }
         if event.modifierFlags.contains(.option) { modifiers |= UInt32(optionKey) }
         if event.modifierFlags.contains(.shift) { modifiers |= UInt32(shiftKey) }
         if event.modifierFlags.contains(.command) { modifiers |= UInt32(cmdKey) }
+
+        // A global hotkey with no ⌃/⌥/⌘ would steal that key from every app.
+        let hasCommandModifier = modifiers & UInt32(controlKey | optionKey | cmdKey) != 0
+        guard hasCommandModifier else {
+            NSSound.beep()
+            title = "Add ⌃/⌥/⌘ + key"
+            return
+        }
+
         let shortcut = Shortcut(keyCode: UInt32(event.keyCode), modifiers: modifiers)
+        finishRecording(cancelled: false)
         self.shortcut = shortcut
         onRecord?(shortcut)
     }
 
-    private func finishRecording() {
+    private func finishRecording(cancelled: Bool) {
+        if cancelled {
+            shortcut = originalShortcut
+        }
+        originalShortcut = nil
         recording = false
         if let monitor { NSEvent.removeMonitor(monitor); self.monitor = nil }
+        if ShortcutRecorderButton.activeRecorder === self {
+            ShortcutRecorderButton.activeRecorder = nil
+        }
     }
 }
 
@@ -418,6 +447,7 @@ final class SettingsController: NSObject {
 
     @objc private func retentionChanged(_ sender: NSPopUpButton) {
         Preferences.shared.sessionRetention = sender.indexOfSelectedItem == 1 ? "untilClear" : "untilQuit"
+        coordinator?.saveSession()
     }
 
     @objc private func toolChanged(_ sender: NSPopUpButton) {

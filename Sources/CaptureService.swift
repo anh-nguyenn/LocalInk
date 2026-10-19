@@ -20,21 +20,43 @@ final class CaptureService {
     static let shared = CaptureService()
 
     private let requestedKey = "LocalInk.captureRequested"
+    private let requestedAtKey = "LocalInk.captureRequestedAt"
     private let defaults = UserDefaults.standard
 
     private init() {}
 
     var access: CaptureAccess {
         if CGPreflightScreenCaptureAccess() { return .allowed }
+        // The system prompt is asynchronous. Treat the first few seconds after
+        // asking as "pending" rather than immediately reporting a denial.
+        if let requestedAt = defaults.object(forKey: requestedAtKey) as? Date {
+            return Date().timeIntervalSince(requestedAt) > 3 ? .denied : .unchecked
+        }
         if defaults.bool(forKey: requestedKey) { return .denied }
         return .unchecked
     }
 
     @discardableResult
     func requestAccess() -> CaptureAccess {
-        CGRequestScreenCaptureAccess()
         defaults.set(true, forKey: requestedKey)
+        defaults.set(Date(), forKey: requestedAtKey)
+        CGRequestScreenCaptureAccess()
         return access
+    }
+
+    // MARK: Configuration
+
+    // ScreenCaptureKit defaults to 1920x1080 on macOS. Always set an explicit
+    // pixel size so exports and the lens match the display exactly.
+    func configuration(pixelSize: CGSize, showsCursor: Bool = false) -> SCStreamConfiguration {
+        let config = SCStreamConfiguration()
+        config.width = max(1, Int(pixelSize.width.rounded()))
+        config.height = max(1, Int(pixelSize.height.rounded()))
+        config.showsCursor = showsCursor
+        if #available(macOS 14.0, *) {
+            config.captureResolution = .best
+        }
+        return config
     }
 
     func shareableContent() async throws -> SCShareableContent {
@@ -51,60 +73,94 @@ final class CaptureService {
     }
 
     // Single-shot capture used by export.
-    func captureImage(filter: SCContentFilter) async throws -> CGImage {
+    func captureImage(filter: SCContentFilter, pixelSize: CGSize) async throws -> CGImage {
+        let config = configuration(pixelSize: pixelSize, showsCursor: false)
         if #available(macOS 14.0, *) {
-            let config = SCStreamConfiguration()
-            config.showsCursor = false
             return try await SCScreenshotManager.captureImage(contentFilter: filter, configuration: config)
         } else {
-            return try await captureImageViaStream(filter: filter)
+            return try await captureImageViaStream(filter: filter, configuration: config)
         }
     }
 
-    private func captureImageViaStream(filter: SCContentFilter) async throws -> CGImage {
-        try await withCheckedThrowingContinuation { continuation in
-            let receiver = SingleShotReceiver()
-            receiver.completion = { result in
-                switch result {
-                case .success(let image): continuation.resume(returning: image)
-                case .failure(let error): continuation.resume(throwing: error)
-                }
-            }
-            Task { [weak receiver] in
-                do {
-                    let config = SCStreamConfiguration()
-                    config.showsCursor = false
-                    config.minimumFrameInterval = CMTime(value: 1, timescale: 60)
-                    let stream = SCStream(filter: filter, configuration: config, delegate: nil)
-                    guard let receiver else { throw CaptureError.cancelled }
-                    try stream.addStreamOutput(receiver, type: .screen, sampleHandlerQueue: DispatchQueue(label: "localink.shot"))
-                    try await stream.startCapture()
-                    try await Task.sleep(nanoseconds: 200_000_000)
-                    try await stream.stopCapture()
-                } catch {
-                    continuation.resume(throwing: error)
-                }
-            }
+    private func captureImageViaStream(filter: SCContentFilter,
+                                       configuration: SCStreamConfiguration) async throws -> CGImage {
+        let receiver = SingleShotReceiver()
+        let stream = SCStream(filter: filter, configuration: configuration, delegate: nil)
+        try stream.addStreamOutput(receiver, type: .screen,
+                                   sampleHandlerQueue: DispatchQueue(label: "localink.shot"))
+        try await stream.startCapture()
+        do {
+            let image = try await receiver.wait(timeout: 2)
+            try? await stream.stopCapture()
+            return image
+        } catch {
+            try? await stream.stopCapture()
+            throw error
         }
     }
 }
 
-enum CaptureError: Error {
+enum CaptureError: LocalizedError {
     case cancelled
+    case timedOut
+
+    var errorDescription: String? {
+        switch self {
+        case .cancelled: return "The capture was cancelled."
+        case .timedOut: return "The screen capture timed out. Try again."
+        }
+    }
 }
 
 private final class SingleShotReceiver: NSObject, SCStreamOutput {
-    var completion: ((Result<CGImage, Error>) -> Void)?
-    private var delivered = false
+    private let lock = NSLock()
+    private var continuation: CheckedContinuation<CGImage, Error>?
+    private var result: Result<CGImage, Error>?
+    private var settled = false
+    private var timeoutWorkItem: DispatchWorkItem?
+
+    func wait(timeout: TimeInterval) async throws -> CGImage {
+        defer { timeoutWorkItem?.cancel() }
+        return try await withCheckedThrowingContinuation { continuation in
+            lock.lock()
+            if let result {
+                lock.unlock()
+                continuation.resume(with: result)
+                return
+            }
+            self.continuation = continuation
+            lock.unlock()
+
+            let item = DispatchWorkItem { [weak self] in
+                self?.finish(.failure(CaptureError.timedOut))
+            }
+            timeoutWorkItem = item
+            DispatchQueue.global().asyncAfter(deadline: .now() + timeout, execute: item)
+        }
+    }
+
+    func finish(_ newResult: Result<CGImage, Error>) {
+        lock.lock()
+        guard !settled else {
+            lock.unlock()
+            return
+        }
+        settled = true
+        let pending = continuation
+        self.continuation = nil
+        if pending == nil { result = newResult }
+        lock.unlock()
+        timeoutWorkItem?.cancel()
+        pending?.resume(with: newResult)
+    }
 
     func stream(_ stream: SCStream, didOutputSampleBuffer sampleBuffer: CMSampleBuffer, of outputType: SCStreamOutputType) {
-        guard !delivered, outputType == .screen else { return }
+        guard outputType == .screen else { return }
         guard let buffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
         let ci = CIImage(cvPixelBuffer: buffer)
         let context = CIContext(options: nil)
         if let cg = context.createCGImage(ci, from: ci.extent) {
-            delivered = true
-            completion?(.success(cg))
+            finish(.success(cg))
         }
     }
 }
@@ -119,8 +175,8 @@ final class ContinuousCapture: NSObject, SCStreamOutput {
     private let queue = DispatchQueue(label: "localink.stream")
     private lazy var ciContext = CIContext(options: [.cacheIntermediates: false])
 
-    func start(filter: SCContentFilter) async throws {
-        let config = SCStreamConfiguration()
+    func start(filter: SCContentFilter, configuration: SCStreamConfiguration) async throws {
+        let config = configuration
         config.showsCursor = false
         config.minimumFrameInterval = CMTime(value: 1, timescale: 30)
         config.queueDepth = 3

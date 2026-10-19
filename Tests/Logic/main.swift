@@ -91,5 +91,41 @@ ctx2.scaleBy(x: 2, y: 2)
 Renderer.draw([line, redact, counter], in: ctx2)
 check(ctx2.makeImage() != nil, "renderer handles line, redact, and counter")
 
+// Multiline text must use the wrapped layout, not a single CTLine.
+let oneLine = Renderer.textBlockSize("Hello", fontSize: 24)
+let twoLines = Renderer.textBlockSize("Hello\nWorld", fontSize: 24)
+check(twoLines.height > oneLine.height, "multiline text block grows in height")
+
+// SVG: explicit width, whiteboard background, arrow head, and highlighter width.
+let bgSVG = ExportService.svgString(for: [rect, pen, line], displayWidth: 300,
+                                    displayHeight: 200, background: .white)
+check(bgSVG.contains("width=\"300.0\"") && bgSVG.contains("viewBox=\"0 0 300.0 200.0\""), "svg includes display size")
+check(bgSVG.contains("<rect x=\"0\" y=\"0\" width=\"300.0\""), "svg includes whiteboard background")
+
+let arrow = Annotation(tool: .arrow, points: [CGPoint(x: 0, y: 0), CGPoint(x: 100, y: 100)],
+                       color: .red, thickness: 4)
+let arrowSVG = ExportService.svgString(for: [arrow], displayWidth: 200, displayHeight: 200)
+check(arrowSVG.contains("<polygon"), "svg draws an arrow head")
+
+let highlighter = Annotation(tool: .highlighter, points: [CGPoint(x: 0, y: 0), CGPoint(x: 50, y: 50)],
+                             color: .yellow, thickness: 4, opacity: 1)
+let highlighterSVG = ExportService.svgString(for: [highlighter], displayWidth: 200, displayHeight: 200)
+check(highlighterSVG.contains("stroke-width=\"10.4\""), "svg matches highlighter width")
+check(highlighterSVG.contains("opacity=\"0.45\""), "svg caps highlighter opacity")
+
+let wrapped = Annotation(tool: .text, points: [CGPoint(x: 10, y: 100)],
+                         color: .black, thickness: 4,
+                         text: "This is a long annotation that should wrap onto several lines when exported to SVG",
+                         fontSize: 24)
+let wrappedSVG = ExportService.svgString(for: [wrapped], displayWidth: 300, displayHeight: 200)
+check(wrappedSVG.components(separatedBy: "<tspan").count > 2, "svg wraps long text into multiple lines")
+
+// Whiteboard export fills the canvas instead of using the screenshot.
+let whiteboard = ExportService.renderAnnotatedImage(screenshot: makeWhiteImage(),
+                                                    annotations: [rect], scale: 1,
+                                                    background: InkColor(red: 1, green: 1, blue: 1))
+let bgPixel = pixel(whiteboard, x: 1, y: 1)
+check(bgPixel.0 > 240 && bgPixel.1 > 240 && bgPixel.2 > 240, "whiteboard export uses background color")
+
 print(failures == 0 ? "ALL TESTS PASSED" : "\(failures) TEST(S) FAILED")
 exit(failures == 0 ? 0 : 1)

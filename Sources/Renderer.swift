@@ -10,6 +10,9 @@ import CoreText
 // `scaleBy(scale, scale)` to map points to backing pixels.
 enum Renderer {
 
+    // Matching width used by the live text editor.
+    static let textWrapWidth: CGFloat = 220
+
     static func draw(_ annotations: [Annotation], in ctx: CGContext) {
         for annotation in annotations {
             draw(annotation, in: ctx)
@@ -199,17 +202,19 @@ enum Renderer {
 
     private static func drawText(_ annotation: Annotation, in ctx: CGContext) {
         guard let text = annotation.text, !text.isEmpty, let origin = annotation.points.first else { return }
-        let font = NSFont.systemFont(ofSize: annotation.fontSize, weight: .medium)
-        let attributes: [NSAttributedString.Key: Any] = [
-            .font: font,
-            .foregroundColor: strokeColor(for: annotation)
-        ]
-        let attributed = NSAttributedString(string: text, attributes: attributes)
-        let line = CTLineCreateWithAttributedString(attributed as CFAttributedString)
+        let size = textBlockSize(text, fontSize: annotation.fontSize)
+        guard size.height > 0 else { return }
+        let framesetter = framesetter(for: text, fontSize: annotation.fontSize,
+                                      color: strokeColor(for: annotation))
+        let path = CGPath(rect: CGRect(x: 0, y: 0, width: textWrapWidth, height: size.height),
+                          transform: nil)
+        let frame = CTFramesetterCreateFrame(framesetter, CFRange(), path, nil)
         ctx.saveGState()
         ctx.textMatrix = .identity
-        ctx.textPosition = CGPoint(x: origin.x, y: origin.y)
-        CTLineDraw(line, ctx)
+        // Text annotations are positioned by their top-left corner so the
+        // committed result matches where the editor was shown.
+        ctx.translateBy(x: origin.x, y: origin.y - size.height)
+        CTFrameDraw(frame, ctx)
         ctx.restoreGState()
     }
 
@@ -218,5 +223,53 @@ enum Renderer {
         let attributed = NSAttributedString(string: text, attributes: [.font: font])
         let line = CTLineCreateWithAttributedString(attributed as CFAttributedString)
         return CTLineGetBoundsWithOptions(line, []).size
+    }
+
+    static func textBlockSize(_ text: String, fontSize: CGFloat,
+                              wrapWidth: CGFloat = textWrapWidth) -> CGSize {
+        guard !text.isEmpty else { return .zero }
+        let framesetter = framesetter(for: text, fontSize: fontSize, color: .black)
+        var fitRange = CFRange()
+        let size = CTFramesetterSuggestFrameSizeWithConstraints(
+            framesetter, CFRange(), nil,
+            CGSize(width: max(1, wrapWidth), height: .greatestFiniteMagnitude),
+            &fitRange)
+        return CGSize(width: max(1, ceil(size.width)), height: max(1, ceil(size.height)))
+    }
+
+    // Returns the line strings produced by the same CoreText layout used for
+    // drawing, so SVG exports wrap text identically.
+    static func textLines(_ text: String, fontSize: CGFloat,
+                          wrapWidth: CGFloat = textWrapWidth) -> [String] {
+        guard !text.isEmpty else { return [] }
+        let size = textBlockSize(text, fontSize: fontSize, wrapWidth: wrapWidth)
+        guard size.height > 0 else { return [] }
+        let framesetter = framesetter(for: text, fontSize: fontSize, color: .black)
+        let path = CGPath(rect: CGRect(x: 0, y: 0, width: max(1, wrapWidth), height: size.height),
+                          transform: nil)
+        let frame = CTFramesetterCreateFrame(framesetter, CFRange(), path, nil)
+        let lines = CTFrameGetLines(frame) as? [CTLine] ?? []
+        let source = text as NSString
+        return lines.map { line in
+            let range = CTLineGetStringRange(line)
+            guard range.length > 0, range.location >= 0,
+                  range.location + range.length <= source.length else { return "" }
+            return source.substring(with: NSRange(location: range.location, length: range.length))
+                .trimmingCharacters(in: .newlines)
+        }
+    }
+
+    private static func framesetter(for text: String, fontSize: CGFloat,
+                                    color: NSColor) -> CTFramesetter {
+        let font = NSFont.systemFont(ofSize: fontSize, weight: .medium)
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.lineBreakMode = .byWordWrapping
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: font,
+            .foregroundColor: color,
+            .paragraphStyle: paragraph
+        ]
+        let attributed = NSAttributedString(string: text, attributes: attributes)
+        return CTFramesetterCreateWithAttributedString(attributed as CFAttributedString)
     }
 }

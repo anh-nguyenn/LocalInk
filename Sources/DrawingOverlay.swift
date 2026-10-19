@@ -22,9 +22,15 @@ final class TextAnnotationEditor: NSTextView {
     override func didChangeText() {
         super.didChangeText()
         let fixedWidth = max(frame.width, 120)
-        let textHeight = attributedString().size().height + 12
-        let newHeight = max(28, min(textHeight, 600))
+        var usedHeight = attributedString().size().height
+        if let textContainer {
+            layoutManager?.ensureLayout(for: textContainer)
+            usedHeight = layoutManager?.usedRect(for: textContainer).height ?? usedHeight
+        }
+        let newHeight = max(28, min(usedHeight + textContainerInset.height * 2 + 8, 600))
+        let top = frame.maxY
         setFrameSize(NSSize(width: fixedWidth, height: newHeight))
+        setFrameOrigin(NSPoint(x: frame.origin.x, y: top - newHeight))
     }
 }
 
@@ -37,6 +43,7 @@ final class DrawingOverlay: NSView {
     var showSpotlight = false
     var whiteboardActive = false
     var cursorPoint = CGPoint(x: -10000, y: -10000)
+    var screenDisplayID: CGDirectDisplayID = 0
 
     weak var coordinator: OverlayCoordinator?
 
@@ -343,8 +350,9 @@ final class DrawingOverlay: NSView {
 
     private func beginTextEditing(at point: CGPoint) {
         let fontSize = max(18, prefs.inkWidth * 6)
-        let editor = TextAnnotationEditor(frame: CGRect(x: point.x, y: point.y - fontSize,
-                                                        width: 220, height: fontSize + 10))
+        let editorHeight = fontSize + 10
+        let editor = TextAnnotationEditor(frame: CGRect(x: point.x, y: point.y - editorHeight,
+                                                        width: Renderer.textWrapWidth, height: editorHeight))
         editor.isRichText = false
         editor.font = NSFont.systemFont(ofSize: fontSize, weight: .medium)
         editor.textColor = prefs.inkColor.nsColor
@@ -376,8 +384,8 @@ final class DrawingOverlay: NSView {
         }
         addSubview(editor)
         activeTextEditor = editor
-        window?.makeFirstResponder(editor)
         window?.makeKey()
+        window?.makeFirstResponder(editor)
         NSApp.activate(ignoringOtherApps: true)
         needsDisplay = true
     }
@@ -415,6 +423,11 @@ final class DrawingOverlay: NSView {
 
     var isErasing: Bool { erasing }
 
+    var needsAnimationFrame: Bool {
+        guard rippleOrigin != nil else { return false }
+        return ProcessInfo.processInfo.systemUptime - rippleStart < 0.5
+    }
+
     // MARK: Text editing state
 
     var isEditingText: Bool { activeTextEditor != nil }
@@ -435,7 +448,11 @@ final class DrawingOverlay: NSView {
     // MARK: Model access (called by coordinator + undo stack)
 
     func appendMark(_ mark: Annotation) {
-        if whiteboardActive { boardMarks.append(mark) } else { marks.append(mark) }
+        appendMark(mark, toBoard: whiteboardActive)
+    }
+
+    func appendMark(_ mark: Annotation, toBoard: Bool) {
+        if toBoard { boardMarks.append(mark) } else { marks.append(mark) }
         needsDisplay = true
     }
 
@@ -473,7 +490,11 @@ final class DrawingOverlay: NSView {
     }
 
     func insertMarks(_ newMarks: [Annotation]) {
-        if whiteboardActive { boardMarks.append(contentsOf: newMarks) } else { marks.append(contentsOf: newMarks) }
+        insertMarks(newMarks, toBoard: whiteboardActive)
+    }
+
+    func insertMarks(_ newMarks: [Annotation], toBoard: Bool) {
+        if toBoard { boardMarks.append(contentsOf: newMarks) } else { marks.append(contentsOf: newMarks) }
         needsDisplay = true
     }
 
@@ -484,20 +505,20 @@ final class DrawingOverlay: NSView {
         needsDisplay = true
     }
 
-    func expireMarks() {
+    func expireMarks() -> (marks: [Annotation], boardMarks: [Annotation]) {
         let now = Date()
-        marks.removeAll { mark in
-            if let expiry = mark.expiry {
-                return now.timeIntervalSince(mark.createdAt) >= expiry
-            }
-            return false
+        func expired(_ mark: Annotation) -> Bool {
+            guard let expiry = mark.expiry else { return false }
+            return now.timeIntervalSince(mark.createdAt) >= expiry
         }
-        boardMarks.removeAll { mark in
-            if let expiry = mark.expiry {
-                return now.timeIntervalSince(mark.createdAt) >= expiry
-            }
-            return false
+        let expiredMarks = marks.filter(expired)
+        let expiredBoardMarks = boardMarks.filter(expired)
+        guard !expiredMarks.isEmpty || !expiredBoardMarks.isEmpty else {
+            return ([], [])
         }
+        marks.removeAll(where: expired)
+        boardMarks.removeAll(where: expired)
         needsDisplay = true
+        return (expiredMarks, expiredBoardMarks)
     }
 }

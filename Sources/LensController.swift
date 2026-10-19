@@ -8,7 +8,8 @@ final class LensView: NSView {
     var fullscreen = false
     var screen: NSScreen?
 
-    override var isFlipped: Bool { true }
+    // Keep AppKit's default (unflipped) coordinates. Drawing a CGImage into a
+    // flipped view vertically mirrors it.
     override var isOpaque: Bool { false }
 
     override func draw(_ dirtyRect: NSRect) {
@@ -71,6 +72,7 @@ final class LensController {
     private var lensView: LensView?
     private var capture: ContinuousCapture?
     private var timer: Timer?
+    private var generation = 0
     private(set) var mode: ZoomMode = .off
 
     func start(_ newMode: ZoomMode) {
@@ -79,6 +81,8 @@ final class LensController {
 
         guard let screen = screenUnderMouse() else { return }
         mode = newMode
+        generation += 1
+        let token = generation
 
         let size = newMode == .fullscreen ? screen.frame.size : NSSize(width: Preferences.shared.lensSize,
                                                                        height: Preferences.shared.lensSize)
@@ -112,11 +116,12 @@ final class LensController {
         }
 
         Task { [weak self] in
-            await self?.beginCapture()
+            await self?.beginCapture(token: token)
         }
     }
 
     func stop() {
+        generation += 1
         capture?.stop()
         capture = nil
         timer?.invalidate()
@@ -146,24 +151,34 @@ final class LensController {
         panel.setFrameOrigin(origin)
     }
 
-    private func beginCapture() async {
+    private func beginCapture(token: Int) async {
         guard let screen = lensView?.screen else { return }
+        let pixelSize = CGSize(width: screen.frame.width * screen.backingScaleFactor,
+                               height: screen.frame.height * screen.backingScaleFactor)
         do {
             let content = try await CaptureService.shared.shareableContent()
-            guard let display = CaptureService.shared.display(screen.displayID, in: content) else { return }
+            guard token == generation,
+                  let display = CaptureService.shared.display(screen.displayID, in: content) else { return }
             var excluded = localWindowIDs?() ?? []
             if let panel { excluded.insert(CGWindowID(panel.windowNumber)) }
             let filter = CaptureService.shared.filter(display: display, excluding: excluded, in: content)
+            let configuration = CaptureService.shared.configuration(pixelSize: pixelSize)
             let capture = ContinuousCapture()
             capture.onImage = { [weak self] image in
                 self?.lensView?.latestImage = image
                 self?.lensView?.needsDisplay = true
             }
+            guard token == generation else { return }
             self.capture = capture
-            try await capture.start(filter: filter)
+            try await capture.start(filter: filter, configuration: configuration)
+            if token != generation {
+                capture.stop()
+                if self.capture === capture { self.capture = nil }
+            }
         } catch {
             DispatchQueue.main.async { [weak self] in
-                self?.stop()
+                guard let self, token == self.generation else { return }
+                self.stop()
             }
         }
     }

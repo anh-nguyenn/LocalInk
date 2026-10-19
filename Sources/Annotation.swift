@@ -156,8 +156,10 @@ struct Annotation: Identifiable, Codable, Equatable {
 
     var boundingBox: CGRect {
         if tool == .text, let text {
-            let size = (text as NSString).size(withAttributes: [.font: NSFont.systemFont(ofSize: fontSize)])
-            return CGRect(origin: points.first ?? .zero, size: size)
+            let size = Renderer.textBlockSize(text, fontSize: fontSize)
+            let origin = points.first ?? .zero
+            return CGRect(x: origin.x, y: origin.y - size.height,
+                          width: size.width, height: size.height)
         }
         if tool == .counter, let center = points.first {
             let radius = fontSize * 0.65

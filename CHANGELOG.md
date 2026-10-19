@@ -4,6 +4,36 @@ All notable changes to LocalInk are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project uses
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- Text annotations can be typed, edited, and selected: overlay panels are now
+  key-capable.
+- Exports and the magnifier capture at the display's real pixel size instead of
+  ScreenCaptureKit's 1920×1080 default.
+- Turning drawing off while the whiteboard is visible no longer leaves a
+  click-through white sheet over the desktop.
+- Whiteboard annotations and background are included in PNG, clipboard, and SVG
+  export.
+- The macOS 13 single-shot capture path can no longer hang or resume its
+  continuation twice.
+- Settings, lens, and other LocalInk windows are excluded from captures.
+- Multi-line and wrapped text render and export consistently.
+- Undo, redo, paste, and eraser undo keep marks on their original canvas.
+- Display configuration changes preserve annotations instead of clearing them.
+- The "Until I clear the screen" session setting now persists and restores
+  drawings.
+- SVG exports include display width, arrowheads, highlighter styling, text
+  wrapping, and correct opacity.
+- The magnifier is no longer vertically flipped.
+- Auto-erase participates in undo/redo and restarts the expiry clock when a mark
+  is restored.
+- The pointer timer stops when no effect needs it, and the shortcut recorder
+  rejects global hotkeys without a modifier.
+- Releasing Command reliably restores drawing after a click-through, even when
+  the click activated another app.
+
 ## [1.0.0] — 2026-10-20
 
 First public release.
