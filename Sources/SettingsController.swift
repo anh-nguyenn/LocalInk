@@ -124,6 +124,7 @@ final class SettingsController: NSObject {
                           backing: .buffered, defer: false)
         window.title = "LocalInk Settings"
         window.isReleasedWhenClosed = false
+        window.level = .screenSaver + 1
 
         tabViewController = NSTabViewController()
         tabViewController.tabStyle = .toolbar

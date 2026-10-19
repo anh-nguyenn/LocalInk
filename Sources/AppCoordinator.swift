@@ -50,6 +50,7 @@ final class AppCoordinator: NSObject, NSApplicationDelegate {
         toolbar.onToggleHalo = { [weak self] in self?.toggleHalo() }
         toolbar.onToggleSpotlight = { [weak self] in self?.toggleSpotlight() }
         toolbar.onToggleWhiteboard = { [weak self] in self?.toggleWhiteboard() }
+        toolbar.onPassThrough = { [weak self] in self?.togglePassThrough() }
         toolbar.onHide = { [weak self] in self?.hideToolbar() }
 
         settings.onChange = { [weak self] in
@@ -231,6 +232,7 @@ final class AppCoordinator: NSObject, NSApplicationDelegate {
     // MARK: Shortcut dispatch
 
     private func handleShortcut(_ action: ShortcutAction) {
+        coordinator.setPassThroughHeld(false)
         switch action {
         case .toggleDrawing: toggleDrawing()
         case .toggleHalo: toggleHalo()
@@ -248,6 +250,9 @@ final class AppCoordinator: NSObject, NSApplicationDelegate {
     @objc private func toggleDrawing() {
         let state = coordinator.state
         state.annotationMode = state.drawingEnabled ? .off : .drawing
+        if !state.drawingEnabled {
+            state.passThroughHeld = false
+        }
         coordinator.applyState()
     }
 

@@ -43,15 +43,13 @@ enum ExportService {
         Renderer.draw(annotations, in: annCtx)
         guard let annImage = annCtx.makeImage() else { return screenshot }
 
-        // 2. Composite the two top-left-origin images upright.
+        // 2. Composite the two top-left-origin images.
         guard let finalCtx = CGContext(data: nil, width: pixelW, height: pixelH,
                                        bitsPerComponent: 8, bytesPerRow: 0,
                                        space: CGColorSpaceCreateDeviceRGB(),
                                        bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else {
             return screenshot
         }
-        finalCtx.translateBy(x: 0, y: CGFloat(pixelH))
-        finalCtx.scaleBy(x: 1, y: -1)
         let rect = CGRect(x: 0, y: 0, width: CGFloat(pixelW), height: CGFloat(pixelH))
         finalCtx.draw(screenshot, in: rect)
         finalCtx.draw(annImage, in: rect)

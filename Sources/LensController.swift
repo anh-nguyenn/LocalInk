@@ -151,7 +151,8 @@ final class LensController {
         do {
             let content = try await CaptureService.shared.shareableContent()
             guard let display = CaptureService.shared.display(screen.displayID, in: content) else { return }
-            let excluded = localWindowIDs?() ?? []
+            var excluded = localWindowIDs?() ?? []
+            if let panel { excluded.insert(CGWindowID(panel.windowNumber)) }
             let filter = CaptureService.shared.filter(display: display, excluding: excluded, in: content)
             let capture = ContinuousCapture()
             capture.onImage = { [weak self] image in

@@ -65,7 +65,7 @@ final class OverlayCoordinator {
 
         for screen in NSScreen.screens {
             let panel = NSPanel(contentRect: screen.frame,
-                                styleMask: [.borderless, .nonactivatingPanel],
+                                styleMask: [.borderless],
                                 backing: .buffered, defer: false)
             panel.level = .screenSaver
             panel.isOpaque = false

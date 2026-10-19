@@ -40,5 +40,35 @@ check(img?.width == 200 && img?.height == 200, "rendered image has expected pixe
 let ts = Renderer.textSize("Hello", fontSize: 24)
 check(ts.width > 0 && ts.height > 0, "text size is positive")
 
+// Composite orientation: a white screenshot plus a red diagonal stroke must
+// place the stroke center at the expected pixel in top-left output coordinates.
+func makeWhiteImage() -> CGImage {
+    let shot = CGContext(data: nil, width: 200, height: 200, bitsPerComponent: 8, bytesPerRow: 0,
+                         space: CGColorSpaceCreateDeviceRGB(),
+                         bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)!
+    shot.setFillColor(CGColor(red: 1, green: 1, blue: 1, alpha: 1))
+    shot.fill(CGRect(x: 0, y: 0, width: 200, height: 200))
+    return shot.makeImage()!
+}
+
+func pixel(_ image: CGImage, x: Int, y: Int) -> (UInt8, UInt8, UInt8) {
+    let provider = image.dataProvider!
+    let data = CFDataGetBytePtr(provider.data)!
+    let bpp = image.bitsPerPixel / 8
+    let offset = y * image.bytesPerRow + x * bpp
+    return (data[offset], data[offset + 1], data[offset + 2])
+}
+
+let diag = Annotation(tool: .pen, points: [CGPoint(x: 0, y: 0), CGPoint(x: 100, y: 100)],
+                      color: InkColor(red: 1, green: 0, blue: 0), thickness: 20)
+let composite = ExportService.renderAnnotatedImage(screenshot: makeWhiteImage(),
+                                                   annotations: [diag], scale: 2)
+let center = pixel(composite, x: 100, y: 100)
+check(center.0 > 150 && center.1 < 100 && center.2 < 100, "composite places stroke center correctly (red at display center)")
+let topRight = pixel(composite, x: 190, y: 9)
+check(topRight.0 > 150 && topRight.1 < 100, "composite places stroke top-right endpoint correctly")
+let bottomLeft = pixel(composite, x: 9, y: 190)
+check(bottomLeft.0 > 150 && bottomLeft.1 < 100, "composite places stroke bottom-left endpoint correctly")
+
 print(failures == 0 ? "ALL TESTS PASSED" : "\(failures) TEST(S) FAILED")
 exit(failures == 0 ? 0 : 1)

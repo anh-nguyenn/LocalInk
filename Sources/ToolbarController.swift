@@ -17,6 +17,7 @@ final class ToolbarController {
     var onToggleHalo: (() -> Void)?
     var onToggleSpotlight: (() -> Void)?
     var onToggleWhiteboard: (() -> Void)?
+    var onPassThrough: (() -> Void)?
     var onHide: (() -> Void)?
 
     private var toolButtons: [DrawingTool: NSButton] = [:]
@@ -26,6 +27,7 @@ final class ToolbarController {
     private var haloButton: NSButton!
     private var spotlightButton: NSButton!
     private var whiteboardButton: NSButton!
+    private var passThroughButton: NSButton!
     private var undoButton: NSButton!
     private var redoButton: NSButton!
 
@@ -95,6 +97,10 @@ final class ToolbarController {
         whiteboardButton.target = self
         whiteboardButton.action = #selector(whiteboardTapped(_:))
 
+        passThroughButton = symbolButton("hand.raised", title: "Click Through")
+        passThroughButton.target = self
+        passThroughButton.action = #selector(passThroughTapped(_:))
+
         let clearButton = symbolButton("trash", title: "Clear")
         clearButton.target = self
         clearButton.action = #selector(clearTapped(_:))
@@ -113,6 +119,7 @@ final class ToolbarController {
         actionRow.addArrangedSubview(haloButton)
         actionRow.addArrangedSubview(spotlightButton)
         actionRow.addArrangedSubview(whiteboardButton)
+        actionRow.addArrangedSubview(passThroughButton)
         actionRow.addArrangedSubview(closeButton)
         actionRow.addArrangedSubview(NSView())
 
@@ -182,6 +189,7 @@ final class ToolbarController {
     @objc private func haloTapped(_ sender: Any) { onToggleHalo?() }
     @objc private func spotlightTapped(_ sender: Any) { onToggleSpotlight?() }
     @objc private func whiteboardTapped(_ sender: Any) { onToggleWhiteboard?() }
+    @objc private func passThroughTapped(_ sender: Any) { onPassThrough?() }
     @objc private func clearTapped(_ sender: Any) { onClear?() }
     @objc private func closeTapped(_ sender: Any) { onHide?() }
 
@@ -228,6 +236,7 @@ final class ToolbarController {
         haloButton.state = state.haloEnabled ? .on : .off
         spotlightButton.state = state.spotlightEnabled ? .on : .off
         whiteboardButton.state = state.whiteboardEnabled ? .on : .off
+        passThroughButton.state = (state.annotationMode == .temporaryPassThrough) ? .on : .off
         undoButton.isEnabled = coordinator.undoStack.canUndo
         redoButton.isEnabled = coordinator.undoStack.canRedo
     }
