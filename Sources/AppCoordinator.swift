@@ -703,15 +703,28 @@ final class AppCoordinator: NSObject, NSApplicationDelegate {
     }
 
     private func showControlsOnLaunchIfNeeded() {
-        guard Preferences.shared.showControlWindow else { return }
-        let key = "LocalInk.controlWindowShown.v2"
-        let firstRun = !UserDefaults.standard.bool(forKey: key)
-        UserDefaults.standard.set(true, forKey: key)
-        // Avoid popping a window on every login; user-initiated launches still
-        // show the window.
-        if firstRun || !Preferences.shared.launchAtLogin {
-            showControls()
+        if Self.wasLaunchedAtLogin() {
+            // Automatic login launches honor the startup-window preference so
+            // LocalInk can stay quietly in the menu bar.
+            guard Preferences.shared.showControlWindow else { return }
         }
+        // A user-initiated launch always shows the window. Without it, opening
+        // LocalInk looks like nothing happened even though the menu-bar icon is
+        // present.
+        showControls()
+    }
+
+    private static func wasLaunchedAtLogin() -> Bool {
+        guard let event = NSAppleEventManager.shared().currentAppleEvent,
+              event.eventClass == AEEventClass(kCoreEventClass),
+              event.eventID == AEEventID(kAEOpenApplication) else {
+            return Preferences.shared.launchAtLogin
+        }
+        guard let prop = event.paramDescriptor(forKeyword: AEKeyword(keyAEPropData)) else {
+            return false
+        }
+        let code = prop.enumCodeValue
+        return code == OSType(keyAELaunchedAsLogInItem) || code == OSType(keyAELaunchedAsServiceItem)
     }
 
     @objc private func quitApp() { NSApp.terminate(nil) }

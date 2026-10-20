@@ -90,7 +90,14 @@ final class OverlayCoordinator {
 
         let fallback = snapshots.count == 1 ? snapshots.values.first : nil
         for screen in NSScreen.screens {
-            let panel = OverlayPanel(contentRect: screen.frame,
+            // Leave the menu bar uncovered so the status item stays reachable
+            // and clicks there never paint on the overlay.
+            let menuBarHeight = max(0, screen.frame.maxY - screen.visibleFrame.maxY)
+            let canvas = NSRect(x: screen.frame.minX,
+                                y: screen.frame.minY,
+                                width: screen.frame.width,
+                                height: screen.frame.height - menuBarHeight)
+            let panel = OverlayPanel(contentRect: canvas,
                                      styleMask: [.borderless],
                                      backing: .buffered, defer: false)
             panel.level = .screenSaver
@@ -103,7 +110,7 @@ final class OverlayCoordinator {
             panel.isReleasedWhenClosed = false
             panel.ignoresMouseEvents = true
 
-            let overlay = DrawingOverlay(frame: NSRect(origin: .zero, size: screen.frame.size))
+            let overlay = DrawingOverlay(frame: NSRect(origin: .zero, size: canvas.size))
             overlay.autoresizingMask = [.width, .height]
             overlay.coordinator = self
             overlay.screenDisplayID = screen.displayID

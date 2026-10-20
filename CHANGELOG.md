@@ -58,6 +58,12 @@ First public release.
 - Command click-through restores drawing when Command is released.
 - The pointer timer stops when no effect needs it, and shortcut recording rejects
   global hotkeys without a modifier.
+- Opening LocalInk manually always shows the controls window; the startup-window
+  preference now only suppresses it on automatic login launches.
+- Overlay windows stop at the menu bar, so drawing never blocks the LocalInk
+  status icon.
+- Starting drawing from the menu or a shortcut activates LocalInk so Escape and
+  keyboard shortcuts keep working.
 
 ### Notes
 

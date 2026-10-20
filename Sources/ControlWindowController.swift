@@ -98,7 +98,7 @@ final class ControlWindowController: NSObject, NSWindowDelegate {
         primaryRow.orientation = .horizontal
         primaryRow.spacing = 10
 
-        let showOnLaunch = NSButton(checkboxWithTitle: "Show this window when LocalInk opens",
+        let showOnLaunch = NSButton(checkboxWithTitle: "Show this window when LocalInk starts at login",
                                     target: self, action: #selector(showOnLaunchToggled(_:)))
         showOnLaunch.state = Preferences.shared.showControlWindow ? .on : .off
 
@@ -157,6 +157,9 @@ final class ControlWindowController: NSObject, NSWindowDelegate {
         } else {
             NSApp.activate(ignoringOtherApps: true)
         }
-        NSRunningApplication.current.activate(options: [.activateAllWindows])
+        // Cooperative activation can decline the request while another app is
+        // frontmost. Starting drawing from a menu or global shortcut must still
+        // make LocalInk key so Escape and the single-key tool shortcuts work.
+        NSRunningApplication.current.activate(options: [.activateAllWindows, .activateIgnoringOtherApps])
     }
 }
