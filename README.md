@@ -35,7 +35,7 @@ LocalInk puts a transparent drawing layer over your entire desktop. Toggle it on
 3. Open it — a small LocalInk window appears with a **Start Drawing** button.
    After that, use the pencil icon in the menu bar (or Control-Option-D).
 
-> **First launch:** LocalInk is code-signed locally but not notarized with a paid Apple Developer account. If macOS blocks the first launch, open **System Settings → Privacy & Security**, click **Open Anyway**, then confirm. On macOS versions that still allow it, you can also right-click the app and choose **Open**. You only do this once. You can also run `xattr -dr com.apple.quarantine /Applications/LocalInk.app`.
+> **First launch:** LocalInk 1.0.1 is an ad-hoc signed build and is not notarized because no Apple Developer account is available. If macOS blocks it, use **System Settings → Privacy & Security → Open Anyway** only after confirming the download came from this project's official release page. Future trusted releases require a Developer ID signed and notarized build.
 
 ## Features
 
@@ -55,6 +55,7 @@ LocalInk puts a transparent drawing layer over your entire desktop. Toggle it on
 ### Edit and refine
 - Command-based undo and redo
 - Select, move, delete, copy, and paste annotations
+- With Select active, clicks on empty areas reach the app underneath; click an annotation to select or move it
 - Eraser that removes marks as you drag
 - Whiteboard with a separate canvas and custom background
 - Floating toolbar for tools, colors, width, effects, and clear
@@ -114,6 +115,7 @@ LocalInk keeps one transparent, click-through panel per display and stores annot
 - **Idle:** every event reaches the app underneath.
 - **Halo / spotlight only:** effects follow the pointer, clicks still pass through.
 - **Drawing:** overlays capture the gesture and create a mark.
+- **Select:** empty areas pass clicks through; annotations accept selection and dragging.
 - **Temporary pass-through:** the gesture goes to the app underneath, then drawing resumes.
 
 The live overlay and PNG export share one renderer, and SVG uses the same geometry, so exported marks stay aligned with what you drew.
@@ -149,17 +151,23 @@ Run the headless logic tests:
 ./scripts/test.sh
 ```
 
-Create release artifacts (ZIP + DMG under `dist/`):
+Public releases require an Apple Developer Program membership, a Developer ID Application certificate installed in your keychain, and a `notarytool` keychain profile. Create the profile once; the command prompts for an app-specific password without storing it in this repository:
 
 ```bash
-./release.sh
+/Applications/Xcode.app/Contents/Developer/usr/bin/notarytool store-credentials localink-release \
+  --apple-id "you@example.com" --team-id "TEAMID"
 ```
 
-To sign with a Developer ID instead of ad-hoc:
+Build, sign, notarize, and staple both download formats:
 
 ```bash
-CODESIGN_IDENTITY="Developer ID Application: Your Name (TEAMID)" ./build.sh
+CODESIGN_IDENTITY="Developer ID Application: Your Name (TEAMID)" \
+NOTARYTOOL_PROFILE="localink-release" ./release.sh
 ```
+
+`release.sh` stops before building if either release credential is missing. It notarizes and staples the app before packaging, then signs, notarizes, and staples the DMG. It replaces the stable `LocalInk.zip` and `LocalInk.dmg` files only after both artifacts succeed. Test the downloaded files on a clean Mac before publishing them.
+
+The current 1.0.1 release was packaged as an ad-hoc build because no Developer ID account was available yet. Use the Gatekeeper guidance above until a notarized build is published.
 
 ## Project structure
 

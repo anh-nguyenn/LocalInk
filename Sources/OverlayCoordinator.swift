@@ -217,6 +217,8 @@ final class OverlayCoordinator {
             setPassThroughHeld(commandHeld)
         }
 
+        refreshMouseCapture()
+
         let needsCursor = state.haloEnabled || state.spotlightEnabled
         if needsCursor {
             let location = NSEvent.mouseLocation
@@ -264,9 +266,7 @@ final class OverlayCoordinator {
     // MARK: State application
 
     func applyState() {
-        let capture = state.shouldCaptureMouse
-        for (window, overlay) in zip(windows, overlays) {
-            window.ignoresMouseEvents = !capture
+        for overlay in overlays {
             overlay.drawingEnabled = state.drawingEnabled
             overlay.showHalo = state.haloEnabled
             overlay.showSpotlight = state.spotlightEnabled
@@ -277,8 +277,20 @@ final class OverlayCoordinator {
             }
             overlay.needsDisplay = true
         }
+        refreshMouseCapture()
         refreshTimer()
         onChange?()
+    }
+
+    func refreshMouseCapture() {
+        let location = NSEvent.mouseLocation
+        for (window, overlay) in zip(windows, overlays) {
+            let point = overlay.convert(window.convertPoint(fromScreen: location), from: nil)
+            let overAnnotation = window.frame.contains(location) && overlay.hasAnnotation(at: point)
+            window.ignoresMouseEvents = !state.shouldCaptureMouse(
+                overAnnotation: overAnnotation,
+                selectionGestureActive: overlay.selectionGestureActive)
+        }
     }
 
     func setPassThroughHeld(_ held: Bool) {

@@ -127,5 +127,28 @@ let whiteboard = ExportService.renderAnnotatedImage(screenshot: makeWhiteImage()
 let bgPixel = pixel(whiteboard, x: 1, y: 1)
 check(bgPixel.0 > 240 && bgPixel.1 > 240 && bgPixel.2 > 240, "whiteboard export uses background color")
 
+// Select should let ordinary clicks reach the app below, while retaining
+// annotation selection and an in-progress drag.
+let selectionState = StateController()
+selectionState.annotationMode = .drawing
+selectionState.activeTool = .select
+check(!selectionState.shouldCaptureMouse(overAnnotation: false, selectionGestureActive: false),
+      "select passes clicks through empty space")
+check(selectionState.shouldCaptureMouse(overAnnotation: true, selectionGestureActive: false),
+      "select can pick an annotation")
+check(selectionState.shouldCaptureMouse(overAnnotation: false, selectionGestureActive: true),
+      "select keeps a drag after leaving the annotation")
+selectionState.passThroughHeld = true
+check(!selectionState.shouldCaptureMouse(overAnnotation: true, selectionGestureActive: true),
+      "Command click-through overrides selection")
+selectionState.passThroughHeld = false
+selectionState.activeTool = .pen
+check(selectionState.shouldCaptureMouse(overAnnotation: false, selectionGestureActive: false),
+      "drawing tools still capture empty space")
+selectionState.activeTool = .select
+selectionState.whiteboardEnabled = true
+check(selectionState.shouldCaptureMouse(overAnnotation: false, selectionGestureActive: false),
+      "whiteboard still captures input in select mode")
+
 print(failures == 0 ? "ALL TESTS PASSED" : "\(failures) TEST(S) FAILED")
 exit(failures == 0 ? 0 : 1)

@@ -67,7 +67,7 @@ SIGN_IDENTITY="${CODESIGN_IDENTITY:--}"
 if [[ "$SIGN_IDENTITY" == "-" ]]; then
     codesign --force --sign - "$APP"
 else
-    codesign --force --options runtime --sign "$SIGN_IDENTITY" "$APP"
+    codesign --force --options runtime --timestamp --sign "$SIGN_IDENTITY" "$APP"
 fi
 
 echo "Built: $APP"

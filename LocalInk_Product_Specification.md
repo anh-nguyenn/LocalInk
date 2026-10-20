@@ -2,7 +2,7 @@
 
 - **Product:** LocalInk
 - **Platform:** macOS 13 or newer
-- **Current release:** 1.0.2 (build 3)
+- **Current release:** 1.0.1 (build 1)
 - **Document status:** Current shipped product specification
 - **Last updated:** 2026-10-20
 
@@ -23,7 +23,7 @@ requirement.
 
 ## 2. Current release status
 
-Version 1.0.2 is shipped and distributed as a universal ZIP and DMG. The
+Version 1.0.1 is shipped and distributed as a universal ZIP and DMG. The
 marketing website is live and supports English and Vietnamese.
 
 | Area | Status | Notes |
@@ -43,7 +43,7 @@ marketing website is live and supports English and Vietnamese.
 | Session retention | Shipped | Until quit by default; opt-in restore after relaunch |
 | Website localization | Shipped | English and Vietnamese |
 | App UI localization | Not shipped | The macOS app interface is currently English-only |
-| Developer ID notarization | Not shipped | Builds are ad-hoc signed; Gatekeeper guidance is provided |
+| Developer ID notarization | Not shipped | The 1.0.1 build is ad-hoc signed; Gatekeeper guidance is provided |
 
 ## 3. Product principles
 
@@ -104,6 +104,7 @@ effect and capturing pointer input are separate decisions.
 | Idle | All clicks, drags, and scrolling reach the underlying app |
 | Halo or spotlight only | Effects follow the pointer; the underlying app remains fully interactive |
 | Drawing active | A gesture creates or edits a mark; the underlying app does not receive it |
+| Select active | Empty areas pass clicks and drags to the underlying app; annotations can be selected and moved |
 | Temporary pass-through | The gesture goes to the underlying app, then drawing resumes |
 | Hold Command while drawing | Temporarily click through; releasing Command restores drawing |
 | Toolbar or controls window | Only that window accepts the click; surrounding space follows the current mode |
@@ -119,6 +120,7 @@ effect and capturing pointer input are separate decisions.
 - Command-based undo and redo for marks, moves, deletes, clears, pastes, and
   eraser gestures.
 - Select, move, delete, copy, and paste annotations.
+- With Select active, empty areas pass mouse input to the app underneath; annotations remain selectable and draggable.
 - Marks retain their canvas identity across undo, redo, paste, and whiteboard
   changes.
 
@@ -285,7 +287,7 @@ Engineering targets, not measured guarantees:
 
 - The app interface is English-only; the website is available in English and
   Vietnamese.
-- The distributed build is ad-hoc signed and not notarized.
+- The distributed 1.0.1 build is ad-hoc signed and not notarized because no Developer ID account is available. The release scripts are ready for notarized builds once credentials are supplied.
 - Sharing a single app window may not include the overlay.
 - LocalInk does not record video, provide cloud whiteboards, collaboration, slide
   editing, or AI features.

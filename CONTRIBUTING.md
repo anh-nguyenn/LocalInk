@@ -16,7 +16,7 @@ safe for the people who present with the app.
 ```bash
 ./build.sh          # universal release build into dist/LocalInk.app
 ./scripts/test.sh   # headless geometry, rendering, and export tests
-./release.sh        # versioned ZIP and DMG artifacts under dist/
+./release.sh        # Developer ID signed and notarized ZIP and DMG under dist/
 ```
 
 Run the app and exercise the change on a real desktop session. A compiled app is

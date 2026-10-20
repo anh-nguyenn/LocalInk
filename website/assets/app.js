@@ -52,7 +52,7 @@
         "A cursor halo, click ripples, and a spotlight that dims everything except the detail you mean.",
       "overview.card3.title": "Stay in flow",
       "overview.card3.body":
-        "Every click, drag, and scroll reaches the app underneath. Cursor effects stay click-through.",
+        "Select lets you use the app underneath in empty areas. Cursor effects stay click-through.",
 
       "features.eyebrow": "Capabilities",
       "features.title": "Everything you need for a clear explanation.",
@@ -178,7 +178,7 @@
         "Walk someone through on-screen steps with clear marks and a visible cursor.",
       "usecases.5.title": "Creators",
       "usecases.5.body":
-        "Record annotated tutorials with a clean, native overlay that stays out of the capture.",
+        "Record tutorials with clear annotations layered over the screen you are sharing.",
       "usecases.6.title": "Developers",
       "usecases.6.body":
         "Explain a code path in a shared editor, spotlight a log line, and zoom into a small detail.",
@@ -188,14 +188,14 @@
       "download.sub": "Free forever. No account. No strings.",
       "download.zip": "Download LocalInk.zip",
       "download.dmg": "Download .dmg",
-      "download.meta": "Version 1.0.2 · Universal · macOS 13 or later · ~0.6 MB",
+      "download.meta": "Version 1.0.1 · Universal · macOS 13 or later · ~0.6 MB",
       "download.installTitle": "Install",
       "download.install1": "Download and unzip LocalInk.zip.",
       "download.install2": "Drag LocalInk.app into Applications.",
       "download.install3": "Open it and click Start Drawing.",
       "download.firstTitle": "First launch",
       "download.firstBody":
-        "LocalInk is not notarized with a paid Apple account. If macOS blocks the first launch, use System Settings → Privacy & Security → Open Anyway, or right-click the app and choose Open. You only do this once.",
+        "LocalInk 1.0.1 is ad-hoc signed and not notarized. If macOS blocks the first launch, use System Settings → Privacy & Security → Open Anyway, or right-click the app and choose Open. Only do this if you downloaded LocalInk from the official release page.",
       "download.specific": "Prefer a specific version?",
       "download.allReleases": "See all releases on GitHub",
 
@@ -212,7 +212,7 @@
         "Only the optional magnifier, full-screen zoom, and image export need it. Drawing, halo, and spotlight work without any capture permission.",
       "faq.q4": "Why does macOS warn me the first time?",
       "faq.a4":
-        "The app is not notarized with a paid Apple Developer account. Use System Settings → Privacy & Security → Open Anyway once, or right-click the app and choose Open.",
+        "The 1.0.1 build is ad-hoc signed and not notarized. Use System Settings → Privacy & Security → Open Anyway once, or right-click the app and choose Open.",
       "faq.q5": "Which Macs are supported?",
       "faq.a5":
         "macOS 13 or later, on both Apple Silicon and Intel Macs. The download is a universal build.",
@@ -238,9 +238,9 @@
       "meta.title": "LocalInk — Chú thích màn hình cho macOS",
       "meta.description":
         "LocalInk là ứng dụng miễn phí, mã nguồn mở trên thanh menu macOS để vẽ, tô sáng và làm nổi bật màn hình trên mọi ứng dụng. Hoạt động ngoại tuyến, nhẹ và riêng tư.",
-      "meta.ogTitle": "LocalInk — Nói đúng ý. Giữ nhịp làm việc.",
+      "meta.ogTitle": "LocalInk — Làm rõ ý tưởng. Giữ nhịp làm việc.",
       "meta.ogDescription":
-        "Ứng dụng chú thích màn hình native, ngoại tuyến cho macOS, dành cho thuyết trình, giảng dạy và ghi màn hình.",
+        "Ứng dụng chú thích màn hình thuần macOS, hoạt động ngoại tuyến, dành cho thuyết trình, giảng dạy và ghi màn hình.",
 
       "nav.skip": "Chuyển đến nội dung",
       "nav.home": "Trang chủ LocalInk",
@@ -254,125 +254,125 @@
       "nav.menu": "Mở menu",
       "nav.close": "Đóng menu",
 
-      "hero.eyebrow": "macOS native · Miễn phí & mã nguồn mở",
-      "hero.title": 'Nói đúng ý.<br /><span class="accent">Giữ nhịp làm việc.</span>',
+      "hero.eyebrow": "Ứng dụng thuần macOS · Miễn phí, mã nguồn mở",
+      "hero.title": 'Làm rõ ý tưởng.<br /><span class="accent">Giữ nhịp làm việc.</span>',
       "hero.lede":
-        "LocalInk là lớp chú thích màn hình nhẹ cho macOS. Vẽ, tô sáng và làm nổi bật bất cứ thứ gì trên desktop — ngay trên mọi ứng dụng, mà không làm gián đoạn công việc bên dưới.",
+        "LocalInk là ứng dụng chú thích màn hình gọn nhẹ cho macOS. Vẽ, đánh dấu và làm nổi bật nội dung ngay trên ứng dụng bạn đang dùng mà không cần chuyển cửa sổ.",
       "hero.primary": "Tải cho Mac",
       "hero.secondary": "Xem demo",
-      "hero.meta": "macOS 13 trở lên · Universal · Dưới 1 MB · Không tài khoản, không telemetry",
-      "hero.badge": "Đang chạy trên macOS",
+      "hero.meta": "macOS 13 trở lên · Hỗ trợ cả Apple Silicon và Intel · Dưới 1 MB · Không cần tài khoản, không thu thập dữ liệu sử dụng",
+      "hero.badge": "Trên macOS",
       "hero.imageAlt":
-        "LocalInk chú thích một bài thuyết trình bằng vòng tròn, mũi tên, vòng sáng quanh con trỏ và spotlight",
-      "hero.caption": "Một thanh công cụ. Mọi ứng dụng. Không cần chuyển đổi.",
+        "LocalInk đánh dấu bài thuyết trình bằng vòng tròn, mũi tên, vòng sáng quanh con trỏ và vùng sáng tập trung",
+      "hero.caption": "Một thanh công cụ. Dùng trên mọi ứng dụng. Không cần chuyển cửa sổ.",
 
-      "trust.label": "Hoạt động trên những ứng dụng bạn đã dùng",
+      "trust.label": "Dùng ngay trên các ứng dụng quen thuộc",
 
       "overview.eyebrow": "Sản phẩm",
-      "overview.title": "Một lớp mỏng, yên tĩnh phủ lên toàn bộ desktop.",
+      "overview.title": "Chú thích ngay trên màn hình, không gián đoạn công việc.",
       "overview.sub":
-        "LocalInk thêm một bề mặt vẽ native phía trên macOS, rồi lập tức nhường chỗ. Không chuyển cửa sổ, không chụp màn hình, không ngắt mạch.",
+        "LocalInk tạo một lớp vẽ trên màn hình. Bạn có thể đánh dấu nội dung mà không cần chuyển cửa sổ hay chụp ảnh màn hình trước.",
       "overview.card1.title": "Chú thích",
       "overview.card1.body":
         "Bút, mũi tên, hình khối, văn bản, che thông tin và bộ đếm tuần tự cho từng bước giải thích.",
-      "overview.card2.title": "Điều hướng sự chú ý",
+      "overview.card2.title": "Thu hút sự chú ý",
       "overview.card2.body":
-        "Vòng sáng quanh con trỏ, gợn sóng khi bấm và spotlight làm tối mọi thứ trừ chi tiết bạn muốn nhấn mạnh.",
-      "overview.card3.title": "Không ngắt mạch",
+        "Vòng sáng quanh con trỏ, hiệu ứng khi nhấp chuột và vùng sáng giúp người xem tập trung vào chi tiết bạn muốn nhấn mạnh.",
+      "overview.card3.title": "Tiếp tục công việc",
       "overview.card3.body":
-        "Mọi cú bấm, kéo và cuộn vẫn đến ứng dụng bên dưới. Hiệu ứng con trỏ luôn xuyên qua.",
+        "Chọn công cụ Chọn để thao tác với ứng dụng bên dưới ở vùng trống. Hiệu ứng con trỏ không chặn thao tác chuột.",
 
-      "features.eyebrow": "Khả năng",
-      "features.title": "Mọi thứ bạn cần cho một lời giải thích rõ ràng.",
+      "features.eyebrow": "Tính năng",
+      "features.title": "Đủ công cụ để trình bày rõ ràng.",
       "features.sub":
-        "Bộ công cụ gọn gàng, thiết kế cho thuyết trình trực tiếp, giảng dạy và ghi màn hình.",
+        "Bộ công cụ gọn nhẹ cho thuyết trình, giảng dạy và ghi màn hình.",
 
       "feature1.tag": "Chú thích",
       "feature1.title": "Vẽ lên mọi thứ",
       "feature1.body":
-        "Dùng bút, bút dạ quang, văn bản, mũi tên và hình khối để nhấn mạnh ý tưởng ngay lập tức — trên slide, code, PDF, video hoặc một buổi demo trực tiếp.",
-      "feature1.b1": "Bút, mũi tên, đường thẳng, chữ nhật, ellipse, bút dạ quang và văn bản",
-      "feature1.b2": "Che thông tin dạng khối và bộ đếm tuần tự",
-      "feature1.b3": "Hình khối ràng buộc bằng Shift và mũi tên bám 45°",
+        "Dùng bút, bút tô sáng, chữ, mũi tên và hình khối để làm rõ ý ngay trên trang chiếu, mã nguồn, PDF, video hoặc bản demo trực tiếp.",
+      "feature1.b1": "Bút, mũi tên, đường thẳng, hình chữ nhật, hình elip, bút tô sáng và chữ",
+      "feature1.b2": "Che thông tin và đánh số thứ tự các bước",
+      "feature1.b3": "Giữ Shift để vẽ hình cân đối hoặc chỉnh mũi tên theo góc 45°",
       "feature1.link": "Tải cho Mac →",
-      "feature1.imageAlt": "Slide được chú thích với một mũi tên và một vòng tròn",
+      "feature1.imageAlt": "Trang chiếu được đánh dấu bằng mũi tên và vòng tròn",
 
-      "feature2.tag": "Điều hướng sự chú ý",
-      "feature2.title": "Giữ mọi ánh nhìn vào con trỏ",
+      "feature2.tag": "Thu hút sự chú ý",
+      "feature2.title": "Giúp người xem theo dõi con trỏ",
       "feature2.body":
-        "Vòng sáng tinh tế theo con trỏ để người xem không bị lạc. Làm nổi bật chi tiết quan trọng trong khi ứng dụng bên dưới vẫn tương tác bình thường.",
+        "Vòng sáng đi theo con trỏ để người xem dễ nhận ra bạn đang chỉ vào đâu. Làm nổi bật chi tiết quan trọng mà vẫn có thể thao tác với ứng dụng bên dưới.",
       "feature2.b1": "Tùy chỉnh màu, kích thước và độ mờ của vòng sáng",
-      "feature2.b2": "Spotlight với khẩu độ điều chỉnh được",
-      "feature2.b3": "Gợn sóng khi bấm, kính lúp và zoom toàn màn hình",
+      "feature2.b2": "Điều chỉnh kích thước vùng sáng tập trung",
+      "feature2.b3": "Hiệu ứng nhấp chuột, kính lúp và phóng to toàn màn hình",
       "feature2.link": "Tải cho Mac →",
-      "feature2.imageAlt": "Spotlight làm tối màn hình trừ vùng quanh con trỏ",
+      "feature2.imageAlt": "Màn hình tối đi, chỉ vùng quanh con trỏ được làm sáng",
 
       "feature3.tag": "Chụp & chia sẻ",
-      "feature3.title": "Bảng sạch, sẵn sàng chia sẻ",
+      "feature3.title": "Bảng trắng để trình bày và chia sẻ",
       "feature3.body":
-        "Chuyển sang bảng trắng để giải thích không bị xao nhãng, rồi xuất đúng những gì bạn thấy dưới dạng PNG hoặc SVG — không kèm điều khiển của LocalInk.",
-      "feature3.b1": "Bảng trắng với canvas riêng",
-      "feature3.b2": "Xuất PNG và sao chép vào clipboard",
-      "feature3.b3": "Xuất SVG vector cho tài liệu",
+        "Dùng bảng trắng để trình bày mà không bị phân tâm. Xuất ảnh PNG hoặc lưu nét vẽ dưới dạng SVG, không kèm thanh công cụ LocalInk.",
+      "feature3.b1": "Bảng trắng với vùng vẽ riêng",
+      "feature3.b2": "Xuất PNG và sao chép vào bộ nhớ tạm",
+      "feature3.b3": "Lưu nét vẽ dạng SVG cho tài liệu",
       "feature3.link": "Tải cho Mac →",
-      "feature3.imageAlt": "Bảng trắng với các nét vẽ marker",
+      "feature3.imageAlt": "Bảng trắng với các nét bút đánh dấu",
 
-      "stats.eyebrow": "Nhỏ gọn có chủ đích",
-      "stats.title": "Native, nhanh và yên tĩnh.",
+      "stats.eyebrow": "Gọn nhẹ ngay từ thiết kế",
+      "stats.title": "Thuần macOS, nhanh và gọn.",
       "stats.sub":
-        "Không web runtime. Không dịch vụ chạy nền. Không cần cấu hình trước khi thuyết trình.",
+        "Không cần môi trường chạy web hay dịch vụ nền. Mở ứng dụng là có thể bắt đầu trình bày.",
       "stats.1": "Dung lượng tải",
       "stats.2": "Yêu cầu mạng",
       "stats.3": "Apple Silicon & Intel",
       "stats.4": "Phiên bản macOS",
 
       "demo.eyebrow": "Dùng thử",
-      "demo.title": "Thanh công cụ, ngay trong trình duyệt.",
+      "demo.title": "Thử vẽ ngay trong trình duyệt.",
       "demo.sub":
-        "Vẽ lên slide bên dưới. Ứng dụng thật hoạt động theo cách này trên mọi cửa sổ trên Mac.",
-      "demo.toolbar": "Công cụ demo",
+        "Vẽ thử trên trang chiếu bên dưới. Trên Mac, LocalInk cho phép bạn làm điều tương tự ngay trên các ứng dụng khác.",
+      "demo.toolbar": "Thanh công cụ dùng thử",
       "demo.pen": "Bút",
       "demo.arrow": "Mũi tên",
       "demo.rect": "Hình chữ nhật",
-      "demo.ellipse": "Ellipse",
-      "demo.highlighter": "Bút dạ quang",
+      "demo.ellipse": "Hình elip",
+      "demo.highlighter": "Bút tô sáng",
       "demo.undo": "Hoàn tác",
       "demo.clear": "Xóa",
       "demo.width": "Độ dày",
-      "demo.canvas": "Demo vẽ tương tác",
-      "demo.kicker": "DEMO SẢN PHẨM",
-      "demo.slideTitle": "Nói đúng ý.<br />Giữ nhịp làm việc.",
+      "demo.canvas": "Vùng vẽ thử tương tác",
+      "demo.kicker": "DÙNG THỬ SẢN PHẨM",
+      "demo.slideTitle": "Làm rõ ý tưởng.<br />Giữ nhịp làm việc.",
       "demo.slideBody":
-        "Vẽ ở bất kỳ đâu trên slide này. Các nút bên trên mô phỏng thanh công cụ nổi của LocalInk.",
+        "Vẽ ở bất kỳ đâu trên trang chiếu này. Các nút phía trên mô phỏng thanh công cụ nổi của LocalInk.",
       "demo.drawHere": "Vẽ tại đây",
 
       "color.red": "Đỏ",
       "color.orange": "Cam",
       "color.yellow": "Vàng",
-      "color.green": "Lục",
-      "color.blue": "Lam",
+      "color.green": "Xanh lá",
+      "color.blue": "Xanh dương",
       "color.purple": "Tím",
       "color.white": "Trắng",
       "color.black": "Đen",
 
       "how.eyebrow": "Cách hoạt động",
-      "how.title": "Ba bước. Không ngắt mạch.",
+      "how.title": "Ba bước để bắt đầu.",
       "how.step1.title": "Mở và bắt đầu",
       "how.step1.body":
         "Mở LocalInk và bấm Bắt đầu vẽ, hoặc nhấn ⌃⌥D từ bất kỳ đâu.",
-      "how.step2.title": "Vẽ và điều hướng",
+      "how.step2.title": "Vẽ và làm nổi bật",
       "how.step2.body":
-        "Chú thích trên mọi ứng dụng. Bật vòng sáng hoặc spotlight để chỉ vào chi tiết mà không che giao diện.",
+        "Đánh dấu nội dung trên mọi ứng dụng. Bật vòng sáng hoặc vùng sáng tập trung để chỉ rõ chi tiết cần xem.",
       "how.step3.title": "Quay lại công việc",
       "how.step3.body":
         "Tắt chế độ vẽ. Mọi cú bấm, kéo và cuộn lại thuộc về ứng dụng của bạn.",
 
-      "privacy.eyebrow": "Riêng tư mặc định",
+      "privacy.eyebrow": "Riêng tư ngay từ đầu",
       "privacy.title": "Màn hình của bạn không bao giờ rời khỏi Mac.",
       "privacy.body":
-        "LocalInk được xây dựng cho công việc nhạy cảm. Ứng dụng chạy hoàn toàn ngoại tuyến, không tài khoản và không analytics. Vẽ, vòng sáng và spotlight không cần quyền ghi màn hình; chỉ tính năng zoom và xuất ảnh tùy chọn mới cần.",
-      "privacy.c1": "Không đăng ký, không thuê bao, không telemetry",
-      "privacy.c2": "Không có mã mạng khi chạy",
+        "LocalInk phù hợp cả khi bạn làm việc với nội dung nhạy cảm. Ứng dụng chạy ngoại tuyến, không cần tài khoản và không thu thập dữ liệu sử dụng. Vẽ, vòng sáng và vùng sáng tập trung không cần quyền Ghi màn hình; kính lúp, phóng to toàn màn hình và xuất ảnh mới cần quyền này.",
+      "privacy.c1": "Không cần đăng ký, không thuê bao, không thu thập dữ liệu sử dụng",
+      "privacy.c2": "Ứng dụng không truy cập mạng",
       "privacy.c3": "Ảnh chỉ được lưu ở nơi bạn chọn",
       "privacy.c4": "Mã nguồn mở theo giấy phép MIT",
       "privacy.cloud": "Bảng trắng đám mây",
@@ -380,7 +380,7 @@
       "privacy.r2": "Yêu cầu tài khoản",
       "privacy.r3": "Chú thích trên mọi ứng dụng",
       "privacy.r4": "Dung lượng tải",
-      "privacy.r5": "Pixel màn hình bị tải lên",
+      "privacy.r5": "Hình ảnh màn hình được tải lên",
       "privacy.yes": "Có",
       "privacy.no": "Không",
       "privacy.never": "Không bao giờ",
@@ -391,39 +391,39 @@
       "privacy.big": "100 MB+",
 
       "usecases.eyebrow": "Dành cho ai",
-      "usecases.title": "Dành cho những người giải thích mọi thứ.",
+      "usecases.title": "Dành cho người cần trình bày rõ ý.",
       "usecases.1.title": "Giảng viên",
       "usecases.1.body":
-        "Đánh dấu slide và code khi giảng bài, rồi trả lại quyền điều khiển mà không cần chuyển ứng dụng.",
+        "Đánh dấu trang chiếu và mã nguồn khi giảng bài, rồi tiếp tục thao tác mà không cần chuyển ứng dụng.",
       "usecases.2.title": "Người thuyết trình",
       "usecases.2.body":
-        "Chỉ ra một nút trong demo trực tiếp và giữ khán giả đúng bước bạn muốn.",
+        "Chỉ rõ một nút trong bản demo trực tiếp để người xem theo kịp từng bước.",
       "usecases.3.title": "Nhà thiết kế",
       "usecases.3.body":
-        "Khoanh một chi tiết khi review và chú thích trực tiếp trên giao diện đang thảo luận.",
+        "Khoanh vùng chi tiết khi góp ý thiết kế và đánh dấu ngay trên giao diện đang thảo luận.",
       "usecases.4.title": "Hỗ trợ khách hàng",
       "usecases.4.body":
-        "Hướng dẫn từng bước trên màn hình bằng dấu rõ ràng và con trỏ dễ thấy.",
+        "Hướng dẫn từng thao tác trên màn hình bằng nét đánh dấu và con trỏ dễ theo dõi.",
       "usecases.5.title": "Nhà sáng tạo nội dung",
       "usecases.5.body":
-        "Ghi tutorial có chú thích với lớp phủ native gọn gàng, không lọt vào khung hình.",
+        "Ghi video hướng dẫn với nét chú thích rõ ràng ngay trên màn hình được chia sẻ.",
       "usecases.6.title": "Lập trình viên",
       "usecases.6.body":
-        "Giải thích luồng code trong editor dùng chung, làm nổi bật một dòng log và zoom vào chi tiết nhỏ.",
+        "Giải thích luồng mã nguồn trong trình soạn thảo đang chia sẻ, làm nổi bật một dòng nhật ký và phóng to chi tiết nhỏ.",
 
       "download.eyebrow": "Tải xuống",
       "download.title": "Sẵn sàng khi bạn cần.",
       "download.sub": "Miễn phí mãi mãi. Không tài khoản. Không ràng buộc.",
       "download.zip": "Tải LocalInk.zip",
       "download.dmg": "Tải .dmg",
-      "download.meta": "Phiên bản 1.0.2 · Universal · macOS 13 trở lên · ~0.6 MB",
+      "download.meta": "Phiên bản 1.0.1 · Apple Silicon và Intel · macOS 13 trở lên · ~0,6 MB",
       "download.installTitle": "Cài đặt",
       "download.install1": "Tải và giải nén LocalInk.zip.",
-      "download.install2": "Kéo LocalInk.app vào Applications.",
+      "download.install2": "Kéo LocalInk.app vào thư mục Ứng dụng (Applications).",
       "download.install3": "Mở ứng dụng và bấm Bắt đầu vẽ.",
       "download.firstTitle": "Lần mở đầu tiên",
       "download.firstBody":
-        "LocalInk chưa được notarize bằng tài khoản Apple Developer trả phí. Nếu macOS chặn lần mở đầu, vào System Settings → Privacy & Security → Open Anyway, hoặc chuột phải vào ứng dụng và chọn Open. Chỉ cần làm một lần.",
+        "LocalInk 1.0.1 được ký ad-hoc và chưa được Apple công chứng. Nếu macOS chặn lần mở đầu, hãy vào Cài đặt hệ thống → Quyền riêng tư & Bảo mật → Vẫn mở (Open Anyway), hoặc nhấp chuột phải vào ứng dụng rồi chọn Mở. Chỉ làm vậy nếu bạn tải LocalInk từ trang phát hành chính thức.",
       "download.specific": "Muốn bản cụ thể?",
       "download.allReleases": "Xem tất cả bản phát hành trên GitHub",
 
@@ -434,22 +434,22 @@
         "Có. Ứng dụng miễn phí và mã nguồn mở theo giấy phép MIT. Không có gói trả phí, tài khoản hay bản dùng thử.",
       "faq.q2": "Ứng dụng có thu thập dữ liệu không?",
       "faq.a2":
-        "Không. Không telemetry, không analytics và không truy cập mạng trong ứng dụng. Nội dung màn hình của bạn không rời khỏi Mac.",
+        "Không. Ứng dụng không thu thập dữ liệu sử dụng và không truy cập mạng. Nội dung màn hình chỉ ở trên máy Mac của bạn.",
       "faq.q3": "Có cần quyền Ghi màn hình không?",
       "faq.a3":
-        "Chỉ kính lúp, zoom toàn màn hình và xuất ảnh tùy chọn cần quyền này. Vẽ, vòng sáng và spotlight hoạt động mà không cần quyền chụp màn hình.",
+        "Chỉ kính lúp, phóng to toàn màn hình và xuất ảnh mới cần quyền này. Bạn có thể vẽ, bật vòng sáng và vùng sáng tập trung mà không cần cấp quyền Ghi màn hình.",
       "faq.q4": "Tại sao macOS cảnh báo lần đầu?",
       "faq.a4":
-        "Ứng dụng chưa được notarize bằng tài khoản Apple Developer trả phí. Vào System Settings → Privacy & Security → Open Anyway một lần, hoặc chuột phải vào ứng dụng và chọn Open.",
+        "Bản 1.0.1 được ký ad-hoc và chưa được Apple công chứng. Hãy vào Cài đặt hệ thống → Quyền riêng tư & Bảo mật → Vẫn mở (Open Anyway), hoặc nhấp chuột phải vào ứng dụng rồi chọn Mở.",
       "faq.q5": "Hỗ trợ những máy Mac nào?",
       "faq.a5":
-        "macOS 13 trở lên, trên cả Mac Apple Silicon và Intel. Bản tải là universal.",
+        "Máy Mac dùng Apple Silicon hoặc Intel, chạy macOS 13 trở lên. Bản tải hỗ trợ cả hai loại máy.",
       "faq.q6": "Có dùng được khi chia sẻ màn hình không?",
       "faq.a6":
         "Có. Chia sẻ toàn bộ màn hình thường ghi lại lớp phủ chính xác. Chia sẻ một cửa sổ có thể không gồm lớp phủ, nên hãy kiểm tra trong ứng dụng họp hoặc ghi màn hình của bạn.",
 
       "footer.tagline":
-        "Lớp chú thích màn hình native cho macOS, dành cho thuyết trình, giảng dạy và ghi màn hình.",
+        "Ứng dụng chú thích màn hình thuần macOS cho thuyết trình, giảng dạy và ghi màn hình.",
       "footer.product": "Sản phẩm",
       "footer.resources": "Tài nguyên",
       "footer.project": "Dự án",

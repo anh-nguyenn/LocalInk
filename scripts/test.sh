@@ -18,6 +18,7 @@ mkdir -p .build/test
 "$XCODE_SWIFTC" -sdk "$XCODE_SDK" -target "$(uname -m)-apple-macosx13.0" \
     -framework AppKit -framework ImageIO -framework CoreText \
     Sources/Annotation.swift Sources/Renderer.swift Sources/ExportService.swift \
+    Sources/StateController.swift \
     Tests/Logic/main.swift -o .build/test/logic
 
 .build/test/logic

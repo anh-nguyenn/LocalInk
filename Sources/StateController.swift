@@ -40,10 +40,13 @@ final class StateController {
         annotationMode == .drawing
     }
 
-    var shouldCaptureMouse: Bool {
+    func shouldCaptureMouse(overAnnotation: Bool, selectionGestureActive: Bool) -> Bool {
         if annotationMode == .off { return false }
         if passThroughHeld { return false }
         if annotationMode == .temporaryPassThrough { return false }
+        if activeTool == .select && !whiteboardEnabled {
+            return overAnnotation || selectionGestureActive
+        }
         return true
     }
 

@@ -322,6 +322,7 @@ final class DrawingOverlay: NSView {
         moveOrigin = nil
         moveDelta = .zero
         needsDisplay = true
+        coordinator?.refreshMouseCapture()
     }
 
     func deleteSelected() {
@@ -338,6 +339,12 @@ final class DrawingOverlay: NSView {
     }
 
     var hasSelection: Bool { selectedID != nil }
+
+    var selectionGestureActive: Bool { selectedID != nil && moveOrigin != nil }
+
+    func hasAnnotation(at point: CGPoint) -> Bool {
+        activeMarks.contains { $0.contains(point) }
+    }
 
     var selectedMark: Annotation? {
         guard let id = selectedID else { return nil }
